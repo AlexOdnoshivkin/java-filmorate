@@ -9,9 +9,7 @@ import ru.yandex.practicum.filmorate.storage.BaseStorage;
 
 @Service
 @Slf4j
-public class UserService extends BaseService<User>{
-
-
+public class UserService extends BaseService<User> {
 
     @Autowired
     protected UserService(BaseStorage<User> storage) {

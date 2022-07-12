@@ -12,13 +12,10 @@ import java.util.*;
 @RestController
 @Slf4j
 public class UserController {
-    //private final UserService userService;
-
     private final UserService userService;
 
     @Autowired
     public UserController (UserService userService) {
-        //this.userService = userService;
         this.userService = userService;
     }
     @GetMapping("/users")
@@ -29,7 +26,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public User getUserById(@PathVariable long id) {
-        log.info("Получен Get-запрос на получение пользователя");
+        log.info("Получен запрос на получение пользователя c id: {}", id);
         return userService.getById(id);
     }
 

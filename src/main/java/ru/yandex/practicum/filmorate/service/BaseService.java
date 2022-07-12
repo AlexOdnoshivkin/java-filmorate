@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseStorage;
 
 import java.util.List;
-
+//Базовый класс для сервисов. Добавил, так как много общих методов
 public abstract class BaseService<T> {
 
     protected final BaseStorage<T> storage;
@@ -21,8 +20,8 @@ public abstract class BaseService<T> {
         return storage.getById(id);
     }
 
-    abstract public T create(T t);
+    abstract public T create(T t); // сделал эти методы абстрактными, так как в них уже нужны методы конткретного класса
 
-   abstract public T update(T t);
+    abstract public T update(T t);
 
 }

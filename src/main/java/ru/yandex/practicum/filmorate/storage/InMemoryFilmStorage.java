@@ -31,11 +31,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getAll() {
+        log.debug("Переданы все фильмы, количество фильмов: {}", films.size());
         return new ArrayList<>(films.values());
     }
 
     @Override
     public Film getById(long id) {
+        log.debug("Передан фильм: {}", films.get(id));
         return films.get(id);
     }
 }
