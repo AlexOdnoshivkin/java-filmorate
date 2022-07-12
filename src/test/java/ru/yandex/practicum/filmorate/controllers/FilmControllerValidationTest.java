@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class FilmControllerTest {
+public class FilmControllerValidationTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -133,13 +133,12 @@ public class FilmControllerTest {
     }
 
     @Test
-    public void putWhenFilmNotExist_thenReturnError() throws Exception {
+    public void putWhenFilmNotExist_thenReturnNotFound() throws Exception {
         film = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1967, 3, 24), 100);
         mockMvc.perform(put("/films", 42L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
-
 }
