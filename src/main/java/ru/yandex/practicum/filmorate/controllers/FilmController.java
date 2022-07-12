@@ -12,7 +12,7 @@ import java.util.*;
 @RestController
 @Slf4j
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping("/films")
     public List<Film> getFilms() {

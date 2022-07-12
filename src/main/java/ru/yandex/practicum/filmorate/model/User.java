@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @Data
 public class User {
     private static int count;
-    private int id;
+    private long id;
     @NotEmpty
-    @Email
+    @Email(message = "Некорректный формат email")
     private final String email;
     @NotEmpty
     @NotBlank
