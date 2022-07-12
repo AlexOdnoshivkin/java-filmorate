@@ -8,35 +8,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-@Component
+@Component(value = "a")
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
 
     @Override
-    public void addUser(User user) {
+    public void add(User user) {
         users.put(user.getId(), user);
     }
 
     @Override
-    public void updateUser(User user) {
+    public void update(User user) {
         users.put(user.getId(), user);
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void delete(User user) {
         users.remove(user.getId());
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAll() {
         log.debug("Переданы все пользователи, количество пользователей: {}", users.size());
         return new ArrayList<>(users.values());
     }
 
     @Override
-    public User getUserById(long id) {
+    public User getById(long id) {
         log.debug("Передан пользователь: {}", users.get(id));
         return users.get(id);
     }
