@@ -1,17 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class User {
-    private static int count;
-    private long id;
+@EqualsAndHashCode(callSuper = true)
+public class User extends BaseEntity {
     @NotEmpty
     @Email(message = "Некорректный формат email")
     private final String email;
@@ -21,10 +24,14 @@ public class User {
     private String name = null;
     @Past
     private final LocalDate birthday;
+    private final Set<Long> friends = new HashSet<>();
 
-    public void generateId() {
-        if(id == 0) {
-            id = ++count;
-        }
-    }
+   public void addToFriend(long id) {
+       friends.add(id);
+   }
+
+   public void deleteFromFriends(long id) {
+       friends.remove(id);
+   }
+
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.storage.BaseStorage;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public abstract class BaseService<T> {
     }
 
     public T getById(Long id) {
+        if (storage.getById(id) == null) {
+            throw new EntityNotFoundException("Объект не найден");
+        }
         return storage.getById(id);
     }
 
