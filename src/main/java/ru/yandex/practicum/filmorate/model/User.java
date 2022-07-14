@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -13,8 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class User extends BaseEntity {
+public class User implements IdControllable {
     @NotEmpty
     @Email(message = "Некорректный формат email")
     private final String email;
@@ -26,6 +23,9 @@ public class User extends BaseEntity {
     private final LocalDate birthday;
     private final Set<Long> friends = new HashSet<>();
 
+    private static long count;
+    private long id;
+
    public void addToFriend(long id) {
        friends.add(id);
    }
@@ -34,4 +34,10 @@ public class User extends BaseEntity {
        friends.remove(id);
    }
 
+    @Override
+    public void generateId() {
+        if(id == 0) {
+            id = ++count;
+        }
+    }
 }
