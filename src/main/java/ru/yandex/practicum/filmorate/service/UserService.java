@@ -74,7 +74,7 @@ public class UserService extends BaseService<User> {
         }
         return user.getFriends().stream()
                 .filter((id1) -> otherUser.getFriends().stream()
-                        .anyMatch((id2) ->id2.equals(id1)))
+                        .anyMatch((id2) -> id2.equals(id1)))
                 .map(storage::getById)
                 .collect(Collectors.toList());
         /*return user.getFriends().stream()

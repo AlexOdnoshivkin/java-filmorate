@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.storage.BaseStorage;
 
 import java.util.List;
+
 //Базовый класс для сервисов. Добавил, так как много общих методов
 public abstract class BaseService<T> {
 

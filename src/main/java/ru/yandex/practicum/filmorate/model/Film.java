@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 public class Film implements IdControllable {
-    @NotEmpty (message = "Имя не может быть пустым")
+    @NotEmpty(message = "Имя не может быть пустым")
     private final String name;
     @Size(max = 200, message = "Описание должно быть не более 200 символов")
     private final String description;
@@ -27,7 +27,7 @@ public class Film implements IdControllable {
 
     @Override
     public void generateId() {
-        if(id == 0) {
+        if (id == 0) {
             id = ++count;
         }
     }

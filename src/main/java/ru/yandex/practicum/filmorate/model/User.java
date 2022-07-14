@@ -26,17 +26,17 @@ public class User implements IdControllable {
     private static long count;
     private long id;
 
-   public void addToFriend(long id) {
-       friends.add(id);
-   }
+    public void addToFriend(long id) {
+        friends.add(id);
+    }
 
-   public void deleteFromFriends(long id) {
-       friends.remove(id);
-   }
+    public void deleteFromFriends(long id) {
+        friends.remove(id);
+    }
 
     @Override
     public void generateId() {
-        if(id == 0) {
+        if (id == 0) {
             id = ++count;
         }
     }

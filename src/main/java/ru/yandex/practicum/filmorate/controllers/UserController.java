@@ -15,9 +15,10 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController (UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping("/users")
     public Collection<User> getUsers() {
         log.info("Получен запрос на получение списка всех пользователей");
