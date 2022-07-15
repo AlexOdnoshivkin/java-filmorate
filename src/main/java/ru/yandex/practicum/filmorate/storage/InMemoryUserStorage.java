@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component(value = "a")
+@Component()
 @Scope("singleton")
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {

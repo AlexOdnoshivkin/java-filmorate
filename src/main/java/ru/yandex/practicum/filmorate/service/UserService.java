@@ -77,19 +77,6 @@ public class UserService extends BaseService<User> {
                         .anyMatch((id2) -> id2.equals(id1)))
                 .map(storage::getById)
                 .collect(Collectors.toList());
-        /*return user.getFriends().stream()
-                .filter((id1) -> {
-                    boolean commonFriend = false;
-                    for (Long id2 : otherUser.getFriends()) {
-                        if (id1.equals(id2)) {
-                            commonFriend = true;
-                            break;
-                        }
-                    }
-                    return commonFriend;
-                })
-                .map(storage::getById)
-                .collect(Collectors.toList());*/
     }
 
     public void deleteFromFriends(long id, long otherId) {
@@ -103,6 +90,4 @@ public class UserService extends BaseService<User> {
         storage.update(user);
         storage.update(otherUser);
     }
-
-
 }
