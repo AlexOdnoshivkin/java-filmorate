@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Scope("singleton")
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();

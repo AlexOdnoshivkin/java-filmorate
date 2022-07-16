@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Scope("singleton")
 @Slf4j
 public class FilmService extends BaseService<Film> {
     private final UserService userService;
