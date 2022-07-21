@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class UserControllerValidationTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -123,12 +123,12 @@ class UserControllerTest {
     }
 
     @Test
-    public void putWhenUserNotExist_thenReturnBadRequest() throws Exception {
+    public void putWhenUserNotExist_thenReturnNotFound() throws Exception {
         user = new User("test@mail.ru", "TestLogin", LocalDate.of(1991, 4, 20));
         mockMvc.perform(put("/users", 42L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
 }
