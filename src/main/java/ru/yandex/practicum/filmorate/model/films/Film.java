@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.films;
 
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.IdControllable;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 
@@ -24,6 +25,24 @@ public class Film implements IdControllable {
     private final Set<Long> likes = new HashSet<>();
     private static long count;
     private long id;
+    private Genre genre;
+    private MPA mpa;
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public MPA getMpa() {
+        return mpa;
+    }
+
+    public void setMpa(MPA mpa) {
+        this.mpa = mpa;
+    }
 
     @Override
     public void generateId() {

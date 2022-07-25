@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.users.User;
 import ru.yandex.practicum.filmorate.storage.BaseStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +58,7 @@ public class UserService extends BaseService<User> {
         if (user == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        return user.getFriends().stream()
+        return user.getFriends().keySet().stream()
                 .map(storage::getById)
                 .collect(Collectors.toList());
     }
@@ -71,8 +69,8 @@ public class UserService extends BaseService<User> {
         if (user == null || otherUser == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        return user.getFriends().stream()
-                .filter((id1) -> otherUser.getFriends().stream()
+        return user.getFriends().keySet().stream()
+                .filter((id1) -> otherUser.getFriends().keySet().stream()
                         .anyMatch((id2) -> id2.equals(id1)))
                 .map(storage::getById)
                 .collect(Collectors.toList());
