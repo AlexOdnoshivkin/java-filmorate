@@ -34,7 +34,7 @@ FROM friends AS f
     AND (f.user1_id = 1
         OR f.user2_id = 1)
 WHERE users.user_id != 1
-  AND friends.status_id = 2
+  AND friends.is_friend
 ORDER BY u.user_id       
  ```
  GET mutual friends for users with id = 1 and id = 2 :
@@ -52,8 +52,8 @@ ORDER BY u.user_id
          OR f.user2_id = 2)
  WHERE users.user_id != 1
   AND users.user_id != 2
-  AND COST(users.user_id) = 2
-  AND friends.status_id = 2
+  AND COUNT(users.user_id) = 2
+  AND friends.is_friend
  ORDER BY u.user_id
  ```
 GET All films
@@ -66,9 +66,7 @@ SELECT f.film_id,
        f.duration,
        g.genre,
        r.rating
-FROM films AS f
-RIGHT OUTER JOIN genre AS g ON f.genre_id = g.genre_id
-RIGHT OUTER JOIN rating AS R ON f.rating_id = r.rating_id
+FROM films AS 
 ORDER BY f.film_id
 ```
 
