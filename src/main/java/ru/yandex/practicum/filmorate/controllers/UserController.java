@@ -51,7 +51,7 @@ public class UserController {
 
     @PutMapping("/users")
     public User putUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос на добавление пользователя {}", user);
+        log.info("Получен запрос на обновление данных пользователя {}", user);
         return userService.update(user);
     }
 

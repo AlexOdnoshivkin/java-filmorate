@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -25,22 +26,19 @@ public class Film implements IdControllable {
     private final Set<Long> likes = new HashSet<>();
     private static long count;
     private long id;
-    private Genre genre;
-    private MPA mpa;
+    private Set<Genre> genres = new HashSet<>();
+    @NotNull
+    private Mpa mpa;
 
-    public Genre getGenre() {
-        return genre;
+    public Set<Genre> getGenres() {
+        return genres;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
-    }
-
-    public MPA getMpa() {
+    public Mpa getMpa() {
         return mpa;
     }
 
-    public void setMpa(MPA mpa) {
+    public void setMpa(Mpa mpa) {
         this.mpa = mpa;
     }
 
@@ -49,13 +47,5 @@ public class Film implements IdControllable {
         if (id == 0) {
             id = ++count;
         }
-    }
-
-    public void addLike(long id) {
-        likes.add(id);
-    }
-
-    public void deleteLike(long id) {
-        likes.remove(id);
     }
 }

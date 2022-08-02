@@ -41,3 +41,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+db
+
+!data.sql
+!schema.sql

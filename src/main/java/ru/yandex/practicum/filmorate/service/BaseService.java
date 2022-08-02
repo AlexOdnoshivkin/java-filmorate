@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
-import ru.yandex.practicum.filmorate.storage.BaseStorage;
+import ru.yandex.practicum.filmorate.storage.EntityStorage;
 
 import java.util.List;
 
 //Базовый класс для сервисов. Добавил, так как много общих методов
 public abstract class BaseService<T> {
 
-    protected final BaseStorage<T> storage;
+    protected final EntityStorage<T> storage;
 
-    protected BaseService(BaseStorage<T> storage) {
+    protected BaseService(EntityStorage<T> storage) {
         this.storage = storage;
     }
 

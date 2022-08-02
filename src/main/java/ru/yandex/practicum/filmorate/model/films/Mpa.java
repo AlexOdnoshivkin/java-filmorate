@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model.films;
 import lombok.Data;
 
 @Data
-public class Genre {
+public class Mpa {
     private final long id;
     private final String name;
 }

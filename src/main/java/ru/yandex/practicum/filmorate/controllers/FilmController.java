@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.films.Film;
+import ru.yandex.practicum.filmorate.model.films.Genre;
+import ru.yandex.practicum.filmorate.model.films.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -35,6 +37,32 @@ public class FilmController {
     public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
         log.info("Получен запрос на получение {} фильмов с наибольшим количеством лайков", count);
         return filmService.getMostPopularFilms(count);
+    }
+
+    @GetMapping("/genres")
+    public List<Genre> getAllGenres() {
+        log.info("Получен запрос на получение списка всех жанров");
+        return filmService.getAllGenres();
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenreById(@PathVariable long id) {
+
+        log.info("Получен запрос на получение жанра с id {}", id);
+        return filmService.getGenreById(id);
+    }
+
+    @GetMapping("/mpa")
+    public List<Mpa> getAllMpa() {
+        log.info("Получен запрос на получение списка всех рейтингов");
+        return filmService.getAllMpa();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public Mpa getMpaById(@PathVariable long id) {
+
+        log.info("Получен запрос на получение жанра с id {}", id);
+        return filmService.getMpaById(id);
     }
 
     @PostMapping("/films")
