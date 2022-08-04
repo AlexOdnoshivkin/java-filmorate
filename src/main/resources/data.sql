@@ -1,0 +1,6 @@
+MERGE INTO  MPA (MPA_ID, NAME)
+    VALUES (1,'G'), (2,'PG'), (3,'PG-13'), (4,'R'), (5,'NC-17');
+
+MERGE INTO  GENRE (GENRE_ID, NAME)
+    VALUES (1,'COMEDY'), (2,'DRAMA'), (3,'CARTOON'), (4,'THRILLER'),
+           (5,'DOCUMENTARY'), (6,'ACTION_MOVIE');
