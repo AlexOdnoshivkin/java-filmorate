@@ -24,12 +24,12 @@ public class User implements IdControllable {
     private String name = null;
     @Past
     private final LocalDate birthday;
-    private final Map<Long, FriendStatus> friends = new HashMap<>();
+    //private final Map<Long, FriendStatus> friends = new HashMap<>();
 
     private static long count;
     private long id;
 
-    public void addToFriend(long id) {
+    /*public void addToFriend(long id) {
         FriendStatus friendStatus = FriendStatus.UNCONFIRMED;
         friends.put(id, friendStatus);
     }
@@ -41,7 +41,7 @@ public class User implements IdControllable {
 
     public void deleteFromFriends(long id) {
         friends.remove(id);
-    }
+    }*/
 
     @Override
     public void generateId() {

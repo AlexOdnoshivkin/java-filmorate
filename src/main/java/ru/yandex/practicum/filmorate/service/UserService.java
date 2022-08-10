@@ -5,18 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.users.User;
-import ru.yandex.practicum.filmorate.storage.BaseStorage;
+import ru.yandex.practicum.filmorate.storage.EntityStorage;
+import ru.yandex.practicum.filmorate.storage.FriendsStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserService extends BaseService<User> {
+    private final FriendsStorage friendsStorage;
+    protected final EntityStorage<User> storage;
 
     @Autowired
-    protected UserService(BaseStorage<User> storage) {
+    public UserService(EntityStorage<User> storage, FriendsStorage friendsStorage) {
         super(storage);
+        this.friendsStorage = friendsStorage;
+        this.storage = storage;
+    }
+
+    @Override
+    public User getById(Long id) {
+        if (storage.getById(id) == null) {
+            throw new EntityNotFoundException("Объект не найден");
+        }
+        return storage.getById(id);
     }
 
     @Override
@@ -25,9 +37,7 @@ public class UserService extends BaseService<User> {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        storage.add(user);
-        log.debug("Добавлен пользователь: {}", user);
-        return storage.getById(user.getId());
+        return storage.add(user);
     }
 
     @Override
@@ -47,10 +57,7 @@ public class UserService extends BaseService<User> {
         if (user == null || friend == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        user.addToFriend(friendId);
-        storage.update(user);
-        friend.addToFriend(id);
-        storage.update(friend);
+        friendsStorage.addFriend(id, friendId);
     }
 
     public List<User> getAllFriends(long id) {
@@ -58,9 +65,7 @@ public class UserService extends BaseService<User> {
         if (user == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        return user.getFriends().keySet().stream()
-                .map(storage::getById)
-                .collect(Collectors.toList());
+        return friendsStorage.getAllFriends(id);
     }
 
     public List<User> getCommonFriends(long id, long otherId) {
@@ -69,11 +74,7 @@ public class UserService extends BaseService<User> {
         if (user == null || otherUser == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        return user.getFriends().keySet().stream()
-                .filter((id1) -> otherUser.getFriends().keySet().stream()
-                        .anyMatch((id2) -> id2.equals(id1)))
-                .map(storage::getById)
-                .collect(Collectors.toList());
+        return friendsStorage.getCommonFriends(id, otherId);
     }
 
     public void deleteFromFriends(long id, long otherId) {
@@ -82,9 +83,6 @@ public class UserService extends BaseService<User> {
         if (user == null || otherUser == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        user.deleteFromFriends(otherId);
-        otherUser.deleteFromFriends(id);
-        storage.update(user);
-        storage.update(otherUser);
+        friendsStorage.deleteFromFriends(id, otherId);
     }
 }

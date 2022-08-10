@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 class UserControllerValidationTest {
     @Autowired
     private MockMvc mockMvc;
@@ -28,7 +30,7 @@ class UserControllerValidationTest {
 
     @Test
     public void postWhenValidInput_thenReturnsUser() throws Exception {
-        user = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
+        user = new User("test@gmail.com", "TestLogin", LocalDate.of(1983, 4, 20));
         user.setName("TestName");
         user.generateId();
 
