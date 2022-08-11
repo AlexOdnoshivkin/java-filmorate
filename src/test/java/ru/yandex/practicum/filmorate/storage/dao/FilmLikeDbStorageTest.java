@@ -38,22 +38,24 @@ class FilmLikeDbStorageTest {
         user2.setName("TestName");
         userDbStorage.add(user1);
         userDbStorage.add(user2);
-        storage.addLike(1,1);
-        storage.addLike(2,1);
-        storage.addLike(2,2);
+        List<User> users = userDbStorage.getAll();
+        List<Film> films = filmDbStorage.getAll();
+        storage.addLike(films.get(0).getId(),users.get(0).getId());
+        storage.addLike(films.get(1).getId(),users.get(0).getId());
+        storage.addLike(films.get(1).getId(),users.get(1).getId());
 
         List<Long> popularFilm = storage.getMostPopularFilmsId(10);
-        assertThat(2L)
+        assertThat(films.get(1).getId())
                 .isEqualTo(popularFilm.get(0));
-        assertThat(1L)
+        assertThat(films.get(0).getId())
                 .isEqualTo(popularFilm.get(1));
 
-        storage.deleteLike(2,1);
-        storage.deleteLike(2,2);
+        storage.deleteLike(films.get(1).getId(),users.get(0).getId());
+        storage.deleteLike(films.get(1).getId(),users.get(1).getId());
         popularFilm = storage.getMostPopularFilmsId(10);
-        assertThat(1L)
+        assertThat(films.get(0).getId())
                 .isEqualTo(popularFilm.get(0));
-        storage.deleteLike(1,1);
+        storage.deleteLike(films.get(0).getId(),users.get(0).getId());
         userDbStorage.delete(user1);
         userDbStorage.delete(user2);
         filmDbStorage.delete(film1);
