@@ -43,3 +43,6 @@ build/
 .vscode/
 
 db
+
+!data.sql
+!schema.sql
