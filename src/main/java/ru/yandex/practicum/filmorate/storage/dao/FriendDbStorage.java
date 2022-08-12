@@ -70,7 +70,8 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
                 "GROUP BY u.user_id\n" +
                 "ORDER BY u.user_id";
         List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, id, otherId, otherId, id, otherId);
-        log.debug("Выгружен список общих друзей для пользователей с id {} и {}, количестов друзей: {}", id, otherId, users.size());
+        log.debug("Выгружен список общих друзей для пользователей с id {} и {}, количестов друзей: {}",
+                id, otherId, users.size());
         return users;
     }
 

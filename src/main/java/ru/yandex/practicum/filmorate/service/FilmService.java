@@ -79,7 +79,6 @@ public class FilmService extends BaseService<Film> {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        //Film film = storage.getById(id);
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
