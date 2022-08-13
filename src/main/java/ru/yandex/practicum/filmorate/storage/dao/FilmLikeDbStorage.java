@@ -33,12 +33,12 @@ public class FilmLikeDbStorage implements FilmLikeStorage {
 
     @Override
     public List<Long> getMostPopularFilmsId(int count) {
-        String sqlQuery = "SELECT f.FILM_ID\n" +
-                "FROM FILMS AS f\n" +
-                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID\n" +
-                "LEFT OUTER JOIN LIKES AS l ON f.FILM_ID = l.FILM_ID\n" +
-                "GROUP BY f.FILM_ID\n" +
-                "ORDER BY COUNT(l.USER_ID) DESC\n" +
+        String sqlQuery = "SELECT f.FILM_ID " +
+                "FROM FILMS AS f " +
+                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID " +
+                "LEFT OUTER JOIN LIKES AS l ON f.FILM_ID = l.FILM_ID " +
+                "GROUP BY f.FILM_ID " +
+                "ORDER BY COUNT(l.USER_ID) DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToIdList, count);
     }

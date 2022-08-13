@@ -56,10 +56,10 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setFilmGenre(Film film) {
-        String sqlQuery = "SELECT g.GENRE_ID,\n" +
-                "       g.NAME\n" +
-                "FROM FILMS_GENRE AS fg\n" +
-                "INNER JOIN GENRE g on g.GENRE_ID = FG.GENRE_ID\n" +
+        String sqlQuery = "SELECT g.GENRE_ID," +
+                "                 g.NAME " +
+                "FROM FILMS_GENRE AS fg " +
+                "INNER JOIN GENRE g on g.GENRE_ID = FG.GENRE_ID " +
                 "WHERE fg.FILM_ID = ?";
         List<Genre> genres = jdbcTemplate.query(sqlQuery, this::mapRowToGenre, film.getId());
         Set<Genre> genresSet = new HashSet<>(genres);
@@ -79,10 +79,10 @@ public class GenreDbStorage implements GenreStorage {
 
     public Set<Genre> getFilmGenres(Film film) {
         Set<Genre> genres;
-        String sqlQuery = "SELECT g.GENRE_ID,\n" +
-                "       g.NAME\n" +
-                "FROM FILMS_GENRE AS fg\n" +
-                "INNER JOIN GENRE g on g.GENRE_ID = FG.GENRE_ID\n" +
+        String sqlQuery = "SELECT g.GENRE_ID," +
+                "                 g.NAME " +
+                "FROM FILMS_GENRE AS fg " +
+                "INNER JOIN GENRE g on g.GENRE_ID = FG.GENRE_ID " +
                 "WHERE fg.FILM_ID = ?";
         genres = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToGenre, film.getId()));
         return genres;

@@ -34,18 +34,18 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
     }
 
     public List<User> getAllFriends(long id) {
-        String sqlQuery = "SELECT DISTINCT u.user_id,\n" +
-                "                u.name,\n" +
-                "                u.LOGIN,\n" +
-                "                u.email,\n" +
-                "                u.birthday\n" +
-                "FROM friends AS f\n" +
-                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID\n" +
-                "    OR u.user_id = f.RESP_USER_ID)\n" +
-                "    AND (f.REQ_USER_ID = ?\n" +
-                "        OR f.RESP_USER_ID = ?)\n" +
-                "WHERE ((f.RESP_USER_ID = ?\n" +
-                "  AND f.is_friend) OR f.REQ_USER_ID = ?) AND u.USER_ID != ?\n" +
+        String sqlQuery = "SELECT DISTINCT u.user_id, " +
+                "                          u.name," +
+                "                          u.LOGIN," +
+                "                          u.email," +
+                "                          u.birthday " +
+                "FROM friends AS f " +
+                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID" +
+                "    OR u.user_id = f.RESP_USER_ID) " +
+                "    AND (f.REQ_USER_ID = ?" +
+                "        OR f.RESP_USER_ID = ?)" +
+                "WHERE ((f.RESP_USER_ID = ?" +
+                "  AND f.is_friend) OR f.REQ_USER_ID = ?) AND u.USER_ID != ?" +
                 "ORDER BY u.user_id";
         List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, id, id, id, id);
         log.debug("Выгружен список друзей пользователя с id {}, количество друзей: {}", id, users.size());
@@ -53,21 +53,21 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
     }
 
     public List<User> getCommonFriends(long id, long otherId) {
-        String sqlQuery = "SELECT DISTINCT u.user_id,\n" +
-                "                u.name,\n" +
-                "                u.email,\n" +
-                "                u.login,\n" +
-                "                u.birthday\n" +
-                "FROM friends AS f\n" +
-                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID\n" +
-                "    OR u.user_id = f.RESP_USER_ID)\n" +
-                "    AND (f.REQ_USER_ID = ?\n" +
-                "        OR f.RESP_USER_ID = ?\n" +
-                "        OR f.REQ_USER_ID = ?\n" +
-                "        OR f.RESP_USER_ID = ?)\n" +
-                "WHERE u.user_id != ?\n" +
-                "  AND u.user_id != ?\n" +
-                "GROUP BY u.user_id\n" +
+        String sqlQuery = "SELECT DISTINCT u.user_id," +
+                "                          u.name," +
+                "                          u.email," +
+                "                          u.login," +
+                "                          u.birthday " +
+                "FROM friends AS f" +
+                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID" +
+                "    OR u.user_id = f.RESP_USER_ID)" +
+                "    AND (f.REQ_USER_ID = ?" +
+                "        OR f.RESP_USER_ID = ?" +
+                "        OR f.REQ_USER_ID = ?" +
+                "        OR f.RESP_USER_ID = ?)" +
+                "WHERE u.user_id != ?" +
+                "  AND u.user_id != ?" +
+                "GROUP BY u.user_id " +
                 "ORDER BY u.user_id";
         List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, id, otherId, otherId, id, otherId);
         log.debug("Выгружен список общих друзей для пользователей с id {} и {}, количестов друзей: {}",

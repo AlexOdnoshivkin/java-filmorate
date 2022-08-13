@@ -70,31 +70,29 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAll() {
-        String sqlQuery = "SELECT\n" +
-                "    f.FILM_ID,\n" +
-                "    f.NAME,\n" +
-                "    f.DESCRIPTION,\n" +
-                "    f.RELEASE_DATE,\n" +
-                "    f.DURATION,\n" +
-                "    f.MPA_ID,\n" +
-                "    m.NAME\n" +
-                "FROM FILMS AS f\n" +
-                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID\n" +
+        String sqlQuery = "SELECT f.FILM_ID," +
+                "                 f.NAME," +
+                "                 f.DESCRIPTION," +
+                "                 f.RELEASE_DATE," +
+                "                 f.DURATION," +
+                "                 f.MPA_ID," +
+                "                 m.NAME " +
+                "FROM FILMS AS f " +
+                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID " +
                 "GROUP BY f.FILM_ID";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
     @Override
     public Film getById(long id) {
-        String sqlQuery = "SELECT\n" +
-                "    f.FILM_ID,\n" +
-                "    f.NAME,\n" +
-                "    f.DESCRIPTION,\n" +
-                "    f.RELEASE_DATE,\n" +
-                "    f.DURATION,\n" +
-                "    f.MPA_ID,\n" +
-                "    m.NAME\n" +
-                "FROM FILMS AS f\n" +
+        String sqlQuery = "SELECT f.FILM_ID," +
+                "                 f.NAME," +
+                "                 f.DESCRIPTION," +
+                "                 f.RELEASE_DATE," +
+                "                 f.DURATION," +
+                "                 f.MPA_ID," +
+                "                 m.NAME " +
+                "FROM FILMS AS f " +
                 "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID AND f.FILM_ID = ?";
 
         int affected = jdbcTemplate.update("UPDATE FILMS set FILM_ID = ? where FILM_ID = ?", id, id);

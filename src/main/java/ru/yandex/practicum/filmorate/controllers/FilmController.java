@@ -48,8 +48,8 @@ public class FilmController {
     @GetMapping("/genres/{id}")
     public Genre getGenreById(@PathVariable long id) {
 
-    log.info("Получен запрос на получение жанра с id {}", id);
-    return filmService.getGenreById(id);
+        log.info("Получен запрос на получение жанра с id {}", id);
+        return filmService.getGenreById(id);
     }
 
     @GetMapping("/mpa")
@@ -64,6 +64,7 @@ public class FilmController {
         log.info("Получен запрос на получение жанра с id {}", id);
         return filmService.getMpaById(id);
     }
+
     @PostMapping("/films")
     public Film postFilm(@Valid @RequestBody Film film) {
         return filmService.create(film);

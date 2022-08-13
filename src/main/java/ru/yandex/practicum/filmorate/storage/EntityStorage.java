@@ -4,13 +4,13 @@ import java.util.List;
 
 // Базовый интерфейс для хранилищ. Создал, так как функции в них повторяются
 public interface EntityStorage<T> {
-    public T add(T t);
+    T add(T t);
 
-    public T update(T t);
+    T update(T t);
 
-    public void delete(T t);
+    void delete(T t);
 
-    public List<T> getAll();
+    List<T> getAll();
 
-    public T getById(long id);
+    T getById(long id);
 }
