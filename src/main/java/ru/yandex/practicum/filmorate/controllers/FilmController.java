@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.films.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 import java.util.*;
 
 @RestController
@@ -85,5 +86,10 @@ public class FilmController {
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Получен запрос на удаление лайка фильму с id: {} пользователем с id: {}", id, userId);
         filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/films/common")
+    public List<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
+        return filmService.getCommonFilms(userId, friendId).collect(Collectors.toList());
     }
 }

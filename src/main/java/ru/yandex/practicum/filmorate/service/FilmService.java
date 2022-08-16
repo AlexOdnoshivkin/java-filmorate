@@ -7,26 +7,27 @@ import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Genre;
 import ru.yandex.practicum.filmorate.model.films.Mpa;
-import ru.yandex.practicum.filmorate.storage.EntityStorage;
 import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class FilmService extends BaseService<Film> {
 
     private final UserService userService;
-    private final EntityStorage<Film> storage;
+    private final FilmStorage storage;
     private final FilmLikeStorage filmLikeStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
 
     @Autowired
-    public FilmService(UserService userService, EntityStorage<Film> storage, FilmLikeStorage filmLikeStorage,
+    public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
                        GenreStorage genreStorage, MpaStorage mpaStorage) {
         super(storage);
         this.userService = userService;
@@ -123,5 +124,9 @@ public class FilmService extends BaseService<Film> {
             throw new EntityNotFoundException("Рейтинг не найден");
         }
         return mpaStorage.getMpaById(id);
+    }
+
+    public Stream<Film> getCommonFilms(Long userId, Long friendId) {
+        return storage.getCommonFilms(userId, friendId);
     }
 }
