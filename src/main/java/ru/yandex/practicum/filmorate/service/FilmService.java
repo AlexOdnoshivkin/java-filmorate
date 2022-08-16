@@ -27,17 +27,19 @@ public class FilmService extends BaseService<Film> {
     private final FilmLikeStorage filmLikeStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
+    private final EventService eventService;
     private final DirectorDBStorage directorDBStorage;
 
     @Autowired
     public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
-                       GenreStorage genreStorage, MpaStorage mpaStorage, DirectorDBStorage directorDBStorage) {
+                       GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService) {
         super(storage);
         this.userService = userService;
         this.storage = storage;
         this.filmLikeStorage = filmLikeStorage;
         this.genreStorage = genreStorage;
         this.mpaStorage = mpaStorage;
+        this.eventService = eventService;
         this.directorDBStorage = directorDBStorage;
     }
 
@@ -95,6 +97,7 @@ public class FilmService extends BaseService<Film> {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmLikeStorage.addLike(id, userId);
+        eventService.addLikeEvent(userId, id);
     }
 
     @Override
@@ -116,6 +119,7 @@ public class FilmService extends BaseService<Film> {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmLikeStorage.deleteLike(id, userId);
+        eventService.removeLikeEvent(userId, id);
     }
 
     public List<Film> getMostPopularFilms(int count) {

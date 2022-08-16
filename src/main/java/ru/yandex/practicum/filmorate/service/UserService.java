@@ -16,12 +16,14 @@ import java.util.List;
 public class UserService extends BaseService<User> {
     private final FriendsStorage friendsStorage;
     protected final EntityStorage<User> storage;
+    private final EventService eventService;
 
     @Autowired
-    public UserService(EntityStorage<User> storage, FriendsStorage friendsStorage) {
+    public UserService(EntityStorage<User> storage, FriendsStorage friendsStorage, EventService eventService) {
         super(storage);
         this.friendsStorage = friendsStorage;
         this.storage = storage;
+        this.eventService = eventService;
     }
 
     @Override
@@ -68,6 +70,7 @@ public class UserService extends BaseService<User> {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         friendsStorage.addFriend(id, friendId);
+        eventService.addFriendEvent(id, friendId);
     }
 
     public List<User> getAllFriends(long id) {
@@ -94,5 +97,6 @@ public class UserService extends BaseService<User> {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         friendsStorage.deleteFromFriends(id, otherId);
+        eventService.removeFriendEvent(id, otherId);
     }
 }
