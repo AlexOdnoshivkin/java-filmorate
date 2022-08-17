@@ -40,6 +40,12 @@ public class FilmController {
         return filmService.getMostPopularFilms(count);
     }
 
+    @GetMapping("/films/director/{directorId}")
+    public List<Film> getFilmsDirectorSort(@RequestParam String sortBy, @PathVariable long directorId) {
+        return filmService.getFilmsDirectorSort(directorId, sortBy);
+    }
+
+
     @GetMapping("/genres")
     public List<Genre> getAllGenres() {
         log.info("Получен запрос на получение списка всех жанров");

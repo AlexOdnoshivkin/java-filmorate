@@ -27,6 +27,7 @@ public class Film implements IdControllable {
     private static long count;
     private long id;
     private Set<Genre> genres = new HashSet<>();
+    private Set<Director> directors = new HashSet<>();
     @NotNull
     private Mpa mpa;
 

@@ -130,4 +130,30 @@ public class FilmDbStorage implements FilmStorage {
         film.setMpa(new Mpa(resultSet.getLong("mpa_id"), resultSet.getString(7)));
         return film;
     }
+
+    public Stream<Film> getMostPopularFilmsDirector(final Long id) {
+        final String selectMostPopularFilms = "SELECT * " +
+                "FROM films " +
+                "LEFT JOIN likes ON films.film_id = likes.film_id " +
+                "LEFT JOIN mpa ON mpa.mpa_id = films.mpa_id " +
+                "LEFT JOIN films_directors ON films_directors.film_id = films.film_id " +
+                "WHERE director_id = ? " +
+                "GROUP BY films.film_id " +
+                "ORDER BY COUNT(user_id) DESC ";
+        return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
+                .stream();
+    }
+
+    public Stream<Film> getSortFilmsDirectorByYear(final Long id) {
+        final String selectMostPopularFilms = "SELECT * " +
+                "FROM films " +
+                "LEFT JOIN likes ON films.film_id = likes.film_id " +
+                "LEFT JOIN mpa ON mpa.mpa_id = films.mpa_id " +
+                "LEFT JOIN films_directors ON films_directors.film_id = films.film_id " +
+                "WHERE director_id = ? " +
+                "GROUP BY films.film_id " +
+                "ORDER BY FILMS.RELEASE_DATE ";
+        return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
+                .stream();
+    }
 }
