@@ -90,6 +90,7 @@ public class FilmController {
 
     @GetMapping("/films/common")
     public List<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Получен запрос на получение списка общих фильмов для пользователей с id {}, {}", userId, friendId);
         return filmService.getCommonFilms(userId, friendId).collect(Collectors.toList());
     }
 }
