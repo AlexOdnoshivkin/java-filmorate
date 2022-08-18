@@ -56,18 +56,18 @@ public class ReviewService {
     }
 
     public void addReactionReview(Long idReview, Long idUser, int i) {
-        if (userDbStorage.getById(idUser) == null || idUser <= 0) {
+        if (userDbStorage.getById(idUser) == null) {
             throw new EntityNotFoundException("Пользователь не найден!");
-        } else if (reviewDbStorage.getById(idReview) == null || idReview <= 0) {
+        } else if (reviewDbStorage.getById(idReview) == null) {
             throw new EntityNotFoundException("Отзыв не найден!");
         }
         reviewDbStorage.addReactionReview(idReview, idUser, i);
     }
 
     public void deleteReactionReview(Long idReview, Long idUser) {
-        if (userDbStorage.getById(idUser) == null || idUser <= 0) {
+        if (userDbStorage.getById(idUser) == null) {
             throw new EntityNotFoundException("Пользователь не найден!");
-        } else if (reviewDbStorage.getById(idReview) == null || idReview <= 0) {
+        } else if (reviewDbStorage.getById(idReview) == null) {
             throw new EntityNotFoundException("Отзыв не найден!");
         }
         reviewDbStorage.deleteReactionReview(idReview, idUser);
