@@ -32,9 +32,11 @@ CREATE TABLE IF NOT EXISTS films (
     mpa_id integer REFERENCES mpa(mpa_id) ON DELETE CASCADE
     );
 
-CREATE TABLE IF NOT EXISTS likes (
+CREATE TABLE IF NOT EXISTS FILM_RATINGS (
     film_id integer REFERENCES films(film_id) ON DELETE CASCADE,
-    user_id integer REFERENCES users(user_id) ON DELETE CASCADE
+    user_id integer REFERENCES users(user_id) ON DELETE CASCADE,
+    user_rating INTEGER,
+    PRIMARY KEY (film_id, user_id)                                   
     );
 
 CREATE TABLE IF NOT EXISTS films_genre (

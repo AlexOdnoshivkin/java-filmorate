@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase
 @AllArgsConstructor(onConstructor_ = @Autowired)
 class FilmLikeDbStorageTest {
-    private final FilmLikeDbStorage storage;
+    private final FilmRatingDbStorage storage;
     private final FilmDbStorage filmDbStorage;
 
     private final UserDbStorage userDbStorage;
@@ -42,9 +41,9 @@ class FilmLikeDbStorageTest {
         userDbStorage.add(user2);
         List<User> users = userDbStorage.getAll();
         List<Film> films = filmDbStorage.getAll();
-        storage.addLike(films.get(0).getId(),users.get(0).getId());
-        storage.addLike(films.get(1).getId(),users.get(0).getId());
-        storage.addLike(films.get(1).getId(),users.get(1).getId());
+        storage.addRating(films.get(0).getId(),users.get(0).getId(), 5);
+        storage.addRating(films.get(1).getId(),users.get(0).getId(), 6);
+        storage.addRating(films.get(1).getId(),users.get(1).getId(), 7);
 
         List<Film> popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
             .collect(Collectors.toList());
@@ -53,13 +52,13 @@ class FilmLikeDbStorageTest {
         assertThat(films.get(0).getId())
                 .isEqualTo(popularFilm.get(1).getId());
 
-        storage.deleteLike(films.get(1).getId(),users.get(0).getId());
-        storage.deleteLike(films.get(1).getId(),users.get(1).getId());
+        storage.deleteRating(films.get(1).getId(),users.get(0).getId());
+        storage.deleteRating(films.get(1).getId(),users.get(1).getId());
         popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
             .collect(Collectors.toList());
         assertThat(films.get(0).getId())
                 .isEqualTo(popularFilm.get(0).getId());
-        storage.deleteLike(films.get(0).getId(),users.get(0).getId());
+        storage.deleteRating(films.get(0).getId(),users.get(0).getId());
         userDbStorage.delete(user1);
         userDbStorage.delete(user2);
         filmDbStorage.delete(film1);
