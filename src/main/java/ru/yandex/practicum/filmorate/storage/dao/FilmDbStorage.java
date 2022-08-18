@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.stream.Stream;
 import java.util.List;
 
 @Repository
@@ -100,6 +101,21 @@ public class FilmDbStorage implements FilmStorage {
             return null;
         }
         return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
+    }
+
+    @Override
+    public Stream<Film> getCommonFilms(Long userId, Long friendId) {
+        String selectCommonFilms = "SELECT f.*, m.name " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
+            "LEFT JOIN likes AS l on f.film_id = l.film_id " +
+            "WHERE l.user_id IN (?, ?) " +
+            "GROUP BY l.film_id " +
+            "HAVING COUNT(l.user_id) = 2 " +
+            "ORDER BY COUNT(l.user_id) DESC";
+        return jdbcTemplate
+            .query(selectCommonFilms, this::mapRowToFilm, userId, friendId)
+            .stream();
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int id) throws SQLException {
