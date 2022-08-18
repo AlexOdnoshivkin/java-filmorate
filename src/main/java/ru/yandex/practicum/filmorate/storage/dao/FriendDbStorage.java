@@ -80,6 +80,6 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
         String sqlQuery = "DELETE FROM FRIENDS WHERE (REQ_USER_ID = ? AND RESP_USER_ID = ?) OR " +
                 "(REQ_USER_ID = ? AND RESP_USER_ID = ?)";
         jdbcTemplate.update(sqlQuery, id, otherId, otherId, id);
-        log.debug("Пользователь с id ? удалён из друзей пользователя с id ?", id, otherId);
+        log.debug("Пользователь с id {} удалён из друзей пользователя с id {}", id, otherId);
     }
 }

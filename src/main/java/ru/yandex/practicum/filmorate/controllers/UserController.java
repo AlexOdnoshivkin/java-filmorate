@@ -66,4 +66,10 @@ public class UserController {
         log.info("Получен запрос на удаление пользователя с id {} из списка друзей пользователя с id {}", friendId, id);
         userService.deleteFromFriends(id, friendId);
     }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        log.info("Получен запрос на удаление пользователя с id: {}.", userId);
+        userService.delete(userId);
+    }
 }

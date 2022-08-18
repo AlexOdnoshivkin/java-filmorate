@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model.users;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.model.IdControllable;
 
 import javax.validation.constraints.Email;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Data
+@EqualsAndHashCode(of="id")
 public class User implements IdControllable {
     @NotEmpty
     @Email(message = "Некорректный формат email")

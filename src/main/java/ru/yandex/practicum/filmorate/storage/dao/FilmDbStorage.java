@@ -79,7 +79,7 @@ public class FilmDbStorage implements FilmStorage {
                 "                 f.MPA_ID," +
                 "                 m.NAME " +
                 "FROM FILMS AS f " +
-                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID " +
+                "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID " +
                 "GROUP BY f.FILM_ID";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }

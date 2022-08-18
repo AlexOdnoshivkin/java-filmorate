@@ -93,4 +93,10 @@ public class FilmController {
         log.info("Получен запрос на получение списка общих фильмов для пользователей с id {}, {}", userId, friendId);
         return filmService.getCommonFilms(userId, friendId).collect(Collectors.toList());
     }
+
+    @DeleteMapping("/films/{filmId}")
+    public void deleteFilm(@PathVariable long filmId) {
+        log.info("Получен запрос на удаление фильма с id: {}.", filmId);
+        filmService.delete(filmId);
+    }
 }

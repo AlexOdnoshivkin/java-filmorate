@@ -29,4 +29,5 @@ public abstract class BaseService<T> {
 
     abstract public T update(T t);
 
+    abstract public void delete(Long id);
 }
