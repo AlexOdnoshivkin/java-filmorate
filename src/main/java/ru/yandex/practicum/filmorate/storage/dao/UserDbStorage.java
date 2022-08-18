@@ -57,6 +57,7 @@ public class UserDbStorage implements UserStorage, MapRawToUser {
     public void delete(User user) {
         String sqlQuery = "DELETE FROM USERS WHERE user_id = ?";
         jdbcTemplate.update(sqlQuery, user.getId());
+        log.debug("Из базы данных удалён пользователь {}.", user);
     }
 
     @Override

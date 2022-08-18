@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.users.User;
 import ru.yandex.practicum.filmorate.storage.EntityStorage;
+import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.FriendsStorage;
 
 import java.util.List;
@@ -49,6 +50,15 @@ public class UserService extends BaseService<User> {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         return storage.getById(user.getId());
+    }
+
+    @Override
+    public void delete(Long id) {
+        User user = storage.getById(id);
+        if (user == null) {
+            throw new EntityNotFoundException("Пользователь не найден");
+        }
+        storage.delete(user);
     }
 
     public void addToFriend(long id, long friendId) {

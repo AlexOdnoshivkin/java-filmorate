@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.films.Film;
+import ru.yandex.practicum.filmorate.model.users.User;
 import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
 
 import java.sql.ResultSet;
@@ -35,7 +37,7 @@ public class FilmLikeDbStorage implements FilmLikeStorage {
     public List<Long> getMostPopularFilmsId(int count) {
         String sqlQuery = "SELECT f.FILM_ID " +
                 "FROM FILMS AS f " +
-                "INNER JOIN MPA m on m.MPA_ID = f.FILM_ID " +
+                "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID " +
                 "LEFT OUTER JOIN LIKES AS l ON f.FILM_ID = l.FILM_ID " +
                 "GROUP BY f.FILM_ID " +
                 "ORDER BY COUNT(l.USER_ID) DESC " +

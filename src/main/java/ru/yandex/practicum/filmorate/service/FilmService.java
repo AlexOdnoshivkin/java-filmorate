@@ -85,6 +85,16 @@ public class FilmService extends BaseService<Film> {
         filmLikeStorage.addLike(id, userId);
     }
 
+    @Override
+    public void delete(Long id) {
+        Film film = storage.getById(id);
+        if (film == null) {
+            throw new EntityNotFoundException("Фильм не найден");
+        }
+        storage.delete(film);
+        log.debug("Удалён фильм: {}", film);
+    }
+
     public void deleteLike(long id, long userId) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
@@ -99,7 +109,7 @@ public class FilmService extends BaseService<Film> {
     public List<Film> getMostPopularFilms(int count) {
         List<Long> mostPopularFilmsId = filmLikeStorage.getMostPopularFilmsId(count);
         return mostPopularFilmsId.stream()
-                .map(storage::getById)
+                .map(Long -> getById(Long))
                 .collect(Collectors.toList());
     }
 
