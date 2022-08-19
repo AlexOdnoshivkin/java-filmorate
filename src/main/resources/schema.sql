@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
     );
 
 CREATE TABLE IF NOT EXISTS friends (
-    req_user_id INTEGER REFERENCES users(user_id),
-    resp_user_id INTEGER REFERENCES users(user_id),
+    req_user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    resp_user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
     is_friend boolean DEFAULT 0,
     PRIMARY KEY (req_user_id, resp_user_id)
     );
@@ -29,17 +29,17 @@ CREATE TABLE IF NOT EXISTS films (
     description varchar (199),
     release_date date,
     duration integer,
-    mpa_id integer REFERENCES mpa(mpa_id)
+    mpa_id integer REFERENCES mpa(mpa_id) ON DELETE CASCADE
     );
 
 CREATE TABLE IF NOT EXISTS likes (
-    film_id integer REFERENCES films(film_id),
-    user_id integer REFERENCES users(user_id)
+    film_id integer REFERENCES films(film_id) ON DELETE CASCADE,
+    user_id integer REFERENCES users(user_id) ON DELETE CASCADE
     );
 
 CREATE TABLE IF NOT EXISTS films_genre (
-    film_id integer REFERENCES films(film_id),
-    genre_id integer REFERENCES genre(genre_id),
+    film_id integer REFERENCES films(film_id) ON DELETE CASCADE,
+    genre_id integer REFERENCES genre(genre_id) ON DELETE CASCADE,
     PRIMARY KEY (film_id, genre_id)
 );
 

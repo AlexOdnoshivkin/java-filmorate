@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model.films;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.model.IdControllable;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(of="id")
 public class Film implements IdControllable {
     @NotEmpty(message = "Имя не может быть пустым")
     private final String name;
