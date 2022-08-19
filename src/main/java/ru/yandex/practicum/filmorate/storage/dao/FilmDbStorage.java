@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import java.time.Year;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -116,6 +117,95 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate
             .query(selectCommonFilms, this::mapRowToFilm, userId, friendId)
             .stream();
+    }
+
+    @Override
+    public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
+        Stream<Film> popularFilms;
+
+        if (genreId == null) {
+            if (year == null) popularFilms = getMostPopularFilmsDefault(count);
+            else popularFilms = getMostPopularFilmsByYear(count, year);
+        } else {
+            if (year == null) popularFilms = getMostPopularFilmsByGenre(count, genreId);
+            else popularFilms = getMostPopularFilmsByGenreAndYear(count, genreId, year);
+        }
+
+        return popularFilms;
+    }
+
+    private Stream<Film> getMostPopularFilmsDefault(Integer count) {
+        String sqlQuery = "SELECT f.film_id, " +
+            "       f.name, " +
+            "       f.description, " +
+            "       f.release_date, " +
+            "       f.duration, " +
+            "       f.mpa_id, " +
+            "       m.name " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
+            "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(l.user_id) DESC " +
+            "LIMIT ?;";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count).stream();
+    }
+
+    private Stream<Film> getMostPopularFilmsByGenre(Integer count, Long genreId) {
+        String sqlQuery = "SELECT f.film_id, " +
+            "       f.name, " +
+            "       f.description, " +
+            "       f.release_date, " +
+            "       f.duration, " +
+            "       f.mpa_id, " +
+            "       m.name " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
+            "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
+            "WHERE g.genre_id = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(l.user_id) DESC " +
+            "LIMIT ?;";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, count).stream();
+    }
+
+    private Stream<Film> getMostPopularFilmsByYear(Integer count, Year year) {
+        String sqlQuery = "SELECT f.film_id, " +
+            "       f.name, " +
+            "       f.description, " +
+            "       f.release_date, " +
+            "       f.duration, " +
+            "       f.mpa_id, " +
+            "       m.name " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
+            "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(l.user_id) DESC " +
+            "LIMIT ?;";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year.getValue(), count).stream();
+    }
+
+    private Stream<Film> getMostPopularFilmsByGenreAndYear(Integer count, Long genreId, Year year) {
+        String sqlQuery = "SELECT f.film_id, " +
+            "       f.name, " +
+            "       f.description, " +
+            "       f.release_date, " +
+            "       f.duration, " +
+            "       f.mpa_id, " +
+            "       m.name " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
+            "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+            "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
+            "WHERE g.genre_id = ? " +
+            "AND EXTRACT(YEAR FROM f.release_date) = ? " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(l.user_id) DESC " +
+            "LIMIT ?;";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, year.getValue(), count).stream();
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int id) throws SQLException {

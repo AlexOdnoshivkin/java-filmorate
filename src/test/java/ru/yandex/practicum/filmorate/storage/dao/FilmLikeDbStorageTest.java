@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,17 +46,19 @@ class FilmLikeDbStorageTest {
         storage.addLike(films.get(1).getId(),users.get(0).getId());
         storage.addLike(films.get(1).getId(),users.get(1).getId());
 
-        List<Long> popularFilm = storage.getMostPopularFilmsId(10);
+        List<Film> popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
+            .collect(Collectors.toList());
         assertThat(films.get(1).getId())
-                .isEqualTo(popularFilm.get(0));
+                .isEqualTo(popularFilm.get(0).getId());
         assertThat(films.get(0).getId())
-                .isEqualTo(popularFilm.get(1));
+                .isEqualTo(popularFilm.get(1).getId());
 
         storage.deleteLike(films.get(1).getId(),users.get(0).getId());
         storage.deleteLike(films.get(1).getId(),users.get(1).getId());
-        popularFilm = storage.getMostPopularFilmsId(10);
+        popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
+            .collect(Collectors.toList());
         assertThat(films.get(0).getId())
-                .isEqualTo(popularFilm.get(0));
+                .isEqualTo(popularFilm.get(0).getId());
         storage.deleteLike(films.get(0).getId(),users.get(0).getId());
         userDbStorage.delete(user1);
         userDbStorage.delete(user2);

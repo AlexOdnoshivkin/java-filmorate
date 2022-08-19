@@ -4,13 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.films.Film;
-import ru.yandex.practicum.filmorate.model.users.User;
 import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 
 @Repository
 @AllArgsConstructor
@@ -31,21 +25,5 @@ public class FilmLikeDbStorage implements FilmLikeStorage {
         String sqlQuery = "DELETE FROM LIKES WHERE FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         log.debug("Удалён лайк фильму с id: {} пользователем с id: {}", id, userId);
-    }
-
-    @Override
-    public List<Long> getMostPopularFilmsId(int count) {
-        String sqlQuery = "SELECT f.FILM_ID " +
-                "FROM FILMS AS f " +
-                "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID " +
-                "LEFT OUTER JOIN LIKES AS l ON f.FILM_ID = l.FILM_ID " +
-                "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT(l.USER_ID) DESC " +
-                "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToIdList, count);
-    }
-
-    private long mapRowToIdList(ResultSet resultSet, int id) throws SQLException {
-        return resultSet.getLong("film_id");
     }
 }

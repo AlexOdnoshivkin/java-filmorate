@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import java.time.Year;
+import javax.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +37,13 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Получен запрос на получение {} фильмов с наибольшим количеством лайков", count);
-        return filmService.getMostPopularFilms(count);
+    public List<Film> getMostPopularFilms(
+        @RequestParam(defaultValue = "10") @Min(1) Integer count,
+        @RequestParam(required = false) Long genreId,
+        @RequestParam(required = false) Year year
+        ) {
+        log.info("Получен запрос на получение {} самых популярных фильмов: год = {}, жанр id = {}", count, genreId, year);
+        return filmService.getMostPopularFilms(count, genreId, year).collect(Collectors.toList());
     }
 
     @GetMapping("/films/director/{directorId}")
