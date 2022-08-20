@@ -32,7 +32,8 @@ public class FilmService extends BaseService<Film> {
 
     @Autowired
     public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
-                       GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService) {
+                       GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService,
+                       DirectorDBStorage directorDBStorage) {
         super(storage);
         this.userService = userService;
         this.storage = storage;
