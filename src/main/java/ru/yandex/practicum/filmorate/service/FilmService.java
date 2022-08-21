@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.time.Year;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -118,11 +119,10 @@ public class FilmService extends BaseService<Film> {
         filmLikeStorage.deleteLike(id, userId);
     }
 
-    public List<Film> getMostPopularFilms(int count) {
-        List<Long> mostPopularFilmsId = filmLikeStorage.getMostPopularFilmsId(count);
-        return mostPopularFilmsId.stream()
-                .map(Long -> getById(Long))
-                .collect(Collectors.toList());
+    public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
+        return storage.getMostPopularFilms(count, genreId, year)
+            .peek(genreStorage::setFilmGenre)
+            .peek(directorDBStorage::setFilmDirector);
     }
 
     public List<Genre> getAllGenres() {
