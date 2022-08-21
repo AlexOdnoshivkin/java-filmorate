@@ -33,7 +33,7 @@ public class RecommendationsDao implements RecommendationsStorage {
         List<Long> resultFilm = new ArrayList<>();
         String sqlQuery = "SELECT f.FILM_ID " +
                 "FROM FILMS AS F " +
-                "JOIN LIKES AS l ON F.FILM_ID = l.FILM_ID and USER_ID= ? " +
+                "JOIN LIKES AS L ON F.FILM_ID = L.FILM_ID and USER_ID= ? " +
                 "EXCEPT " +
                 "SELECT f.FILM_ID " +
                 "FROM FILMS AS f " +
