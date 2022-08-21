@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.event.Event;
 import ru.yandex.practicum.filmorate.model.users.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -11,13 +14,15 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EventService eventService;
 
-    @Autowired
+   /* @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
-    }
+    }*/
 
     @GetMapping("/users")
     public Collection<User> getUsers() {
@@ -41,6 +46,12 @@ public class UserController {
     public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
         log.info("Получен запрос на получение общего списка друзей для пользователей c id {} и {}", id, otherId);
         return userService.getCommonFriends(id, otherId);
+    }
+
+    @GetMapping("/users/{id}/feed")
+    public List<Event> getUserFeed(@PathVariable long id) {
+        log.info("Получен запрос на получение списка событий для пользователя c id {}", id);
+        return eventService.getUserEvents(id);
     }
 
     @PostMapping("/users")

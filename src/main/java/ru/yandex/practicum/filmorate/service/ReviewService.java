@@ -14,9 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewService {
 
-    ReviewDbStorage reviewDbStorage;
-    FilmDbStorage filmDbStorage;
-    UserDbStorage userDbStorage;
+    private final ReviewDbStorage reviewDbStorage;
+    private final FilmDbStorage filmDbStorage;
+    private final UserDbStorage userDbStorage;
+    private final EventService eventService;
 
     public Review getById(Long id) {
         Review review = reviewDbStorage.getById(id);
@@ -41,10 +42,14 @@ public class ReviewService {
             throw new EntityNotFoundException("Фильм не найден!");
         }
         review.setUseful(0);
-        return reviewDbStorage.create(review);
+        Review addedReview = reviewDbStorage.create(review);
+        eventService.addReviewEvent(addedReview.getUserId(), addedReview.getReviewId());
+        return addedReview;
     }
 
     public Review update(Review review) {
+        Review storageReview = reviewDbStorage.getById(review.getReviewId());
+        eventService.updateReviewEvent(storageReview.getUserId(), storageReview.getReviewId());
         return reviewDbStorage.update(review);
     }
 
@@ -52,6 +57,8 @@ public class ReviewService {
         if (reviewDbStorage.getById(id) == null) {
             throw new EntityNotFoundException("Отзыв не найден!");
         }
+        Review review = reviewDbStorage.getById(id);
+        eventService.removeReviewEvent(review.getUserId(), review.getReviewId());
         reviewDbStorage.deleteById(id);
     }
 
