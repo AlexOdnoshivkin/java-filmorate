@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.time.Year;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDBStorage;
+import ru.yandex.practicum.filmorate.storage.dao.RecommendationsDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +32,12 @@ public class FilmService extends BaseService<Film> {
     private final MpaStorage mpaStorage;
     private final EventService eventService;
     private final DirectorDBStorage directorDBStorage;
+    private final RecommendationsDao recommendationsDao;
 
     @Autowired
     public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
                        GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService,
-                       DirectorDBStorage directorDBStorage) {
+                       DirectorDBStorage directorDBStorage, RecommendationsDao recommendationsDao) {
         super(storage);
         this.userService = userService;
         this.storage = storage;
@@ -43,6 +46,7 @@ public class FilmService extends BaseService<Film> {
         this.mpaStorage = mpaStorage;
         this.eventService = eventService;
         this.directorDBStorage = directorDBStorage;
+        this.recommendationsDao = recommendationsDao;
     }
 
     @Override
@@ -126,8 +130,8 @@ public class FilmService extends BaseService<Film> {
 
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
         return storage.getMostPopularFilms(count, genreId, year)
-            .peek(genreStorage::setFilmGenre)
-            .peek(directorDBStorage::setFilmDirector);
+                .peek(genreStorage::setFilmGenre)
+                .peek(directorDBStorage::setFilmDirector);
     }
 
     public List<Genre> getAllGenres() {
@@ -175,5 +179,11 @@ public class FilmService extends BaseService<Film> {
                     .collect(Collectors.toList());
         }
         throw new EntityNotFoundException("Неверный параметр запроса.");
+    }
+
+    public List<Film> getRecommendations(long userId) {
+        return recommendationsDao.getRecommendations(userId).stream()
+                .map(this::getById)
+                .collect(Collectors.toList());
     }
 }

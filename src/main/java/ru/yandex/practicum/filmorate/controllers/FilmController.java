@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import java.time.Year;
 import javax.validation.constraints.Min;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.films.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.stream.Collectors;
 import java.util.*;
 
@@ -38,10 +40,10 @@ public class FilmController {
 
     @GetMapping("/films/popular")
     public List<Film> getMostPopularFilms(
-        @RequestParam(defaultValue = "10") @Min(1) Integer count,
-        @RequestParam(required = false) Long genreId,
-        @RequestParam(required = false) Year year
-        ) {
+            @RequestParam(defaultValue = "10") @Min(1) Integer count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Year year
+    ) {
         log.info("Получен запрос на получение {} самых популярных фильмов: год = {}, жанр id = {}", count, genreId, year);
         return filmService.getMostPopularFilms(count, genreId, year).collect(Collectors.toList());
     }
@@ -110,5 +112,11 @@ public class FilmController {
     public void deleteFilm(@PathVariable long filmId) {
         log.info("Получен запрос на удаление фильма с id: {}.", filmId);
         filmService.delete(filmId);
+    }
+
+    @GetMapping("/users/{userId}/recommendations")
+    public List<Film> getRecommendations(@PathVariable @Positive long userId) {
+        log.info("Получен запрос рекомендация для пользователя с id: {}.", userId);
+        return filmService.getRecommendations(userId);
     }
 }
