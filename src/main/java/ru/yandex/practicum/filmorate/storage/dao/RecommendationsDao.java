@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.storage.RecommendationsStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,10 @@ import java.util.List;
 @Repository
 @Slf4j
 @AllArgsConstructor
-public class RecommendationsDao {
+public class RecommendationsDao implements RecommendationsStorage {
     JdbcTemplate jdbcTemplate;
 
+    @Override
     public List<Long> getRecommendations(long userId) {
         List<Long> commonUser = getCommonUser(userId);
         return getCommonFilm(commonUser, userId);
