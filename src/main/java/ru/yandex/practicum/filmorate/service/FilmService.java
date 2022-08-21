@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.time.Year;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +29,14 @@ public class FilmService extends BaseService<Film> {
     private final FilmLikeStorage filmLikeStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
+    private final EventService eventService;
     private final DirectorDBStorage directorDBStorage;
-
     private final RecommendationsDao recommendationsDao;
 
     @Autowired
     public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
-                       GenreStorage genreStorage, MpaStorage mpaStorage, DirectorDBStorage directorDBStorage,
-                       RecommendationsDao recommendationsDao) {
+                       GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService,
+                       DirectorDBStorage directorDBStorage, RecommendationsDao recommendationsDao) {
         super(storage);
         this.recommendationsDao = recommendationsDao;
         this.userService = userService;
@@ -45,6 +44,7 @@ public class FilmService extends BaseService<Film> {
         this.filmLikeStorage = filmLikeStorage;
         this.genreStorage = genreStorage;
         this.mpaStorage = mpaStorage;
+        this.eventService = eventService;
         this.directorDBStorage = directorDBStorage;
     }
 
@@ -102,6 +102,7 @@ public class FilmService extends BaseService<Film> {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmLikeStorage.addLike(id, userId);
+        eventService.addLikeEvent(userId, id);
     }
 
     @Override
@@ -123,6 +124,7 @@ public class FilmService extends BaseService<Film> {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmLikeStorage.deleteLike(id, userId);
+        eventService.removeLikeEvent(userId, id);
     }
 
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {

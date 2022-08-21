@@ -65,7 +65,7 @@ public class DirectorDBStorage {
 
     public Director getById(long id) {
         String sqlQuery = "SELECT d.DIRECTOR_ID," +
-                "                 d.DIRECTOR_NAME," +
+                "                 d.DIRECTOR_NAME " +
                 "FROM DIRECTORS AS d where DIRECTOR_ID = ?";
         int affected = jdbcTemplate.update("UPDATE DIRECTORS set DIRECTOR_ID = ? where DIRECTOR_ID = ?", id, id);
         if (affected == 0) {
