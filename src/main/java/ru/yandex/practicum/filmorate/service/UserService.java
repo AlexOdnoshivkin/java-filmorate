@@ -26,7 +26,6 @@ public class UserService {
     }
 
     public User create(User user) {
-        user.generateId();
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
