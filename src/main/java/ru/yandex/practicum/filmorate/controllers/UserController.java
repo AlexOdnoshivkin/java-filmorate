@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.event.Event;
 import ru.yandex.practicum.filmorate.model.users.User;
@@ -18,11 +17,6 @@ import java.util.*;
 public class UserController {
     private final UserService userService;
     private final EventService eventService;
-
-   /* @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }*/
 
     @GetMapping("/users")
     public Collection<User> getUsers() {

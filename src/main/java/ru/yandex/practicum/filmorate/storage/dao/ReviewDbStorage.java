@@ -20,29 +20,49 @@ public class ReviewDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    final static String sql = "SELECT r.*, " +
-            "COALESCE(u,0) AS USEFUL " +
-            "FROM REVIEWS AS r " +
-            "LEFT JOIN (SELECT REVIEW_ID,SUM(UTILITY) as u " +
-            "FROM REVIEW_LIKE GROUP BY REVIEW_ID ) AS d " + "ON r.REVIEW_ID = d.REVIEW_ID ";
-
     public List<Review> getAll(Long filmId, int count) {
-        String sqlQuery = "";
-        if (filmId == 0) {
-            sqlQuery = sql +
-                    "ORDER BY USEFUL desc " +
-                    "LIMIT ?";
-        } else {
-            sqlQuery = sql +
-                    "WHERE FILM_ID = " + filmId +
-                    " ORDER BY USEFUL desc " +
-                    "LIMIT ?";
-        }
-        return jdbcTemplate.query(sqlQuery, this::mapRowToReview, count);
+        return filmId == null || filmId == 0
+                ? getWithLimit(count)
+                : getForFilmWithLimit(filmId, count);
+    }
+
+    private List<Review> getForFilmWithLimit(Long filmId, int count) {
+        return jdbcTemplate.query(
+                "SELECT r.*, " +
+                        "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
+                        "FROM REVIEWS AS r " +
+                        "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
+                        "WHERE FILM_ID = ? " +
+                        "GROUP BY r.REVIEW_ID " +
+                        "ORDER BY USEFUL DESC " +
+                        "LIMIT ?",
+                this::mapRowToReview,
+                filmId,
+                count
+        );
+    }
+
+    private List<Review> getWithLimit(int count) {
+        return jdbcTemplate.query(
+                "SELECT r.*, " +
+                        "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
+                        "FROM REVIEWS AS r " +
+                        "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
+                        "GROUP BY r.REVIEW_ID " +
+                        "ORDER BY USEFUL desc " +
+                        "LIMIT ?",
+                this::mapRowToReview,
+                count
+        );
     }
 
     public Review getById(long id) {
-        String sqlQuery = sql + "WHERE r.REVIEW_ID = ?";
+        String sqlQuery = "SELECT r.*, " +
+                "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
+                "FROM REVIEWS AS r " +
+                "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
+                "WHERE r.REVIEW_ID = ? " +
+                "GROUP BY r.REVIEW_ID";
         int affected = jdbcTemplate.update("UPDATE REVIEWS set REVIEW_ID = ? where REVIEW_ID = ?", id, id);
         if (affected == 0) {
             return null;

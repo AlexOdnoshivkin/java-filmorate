@@ -81,7 +81,6 @@ public class FilmController {
 
     @GetMapping("/mpa/{id}")
     public Mpa getMpaById(@PathVariable long id) {
-
         log.info("Получен запрос на получение жанра с id {}", id);
         return filmService.getMpaById(id);
     }
