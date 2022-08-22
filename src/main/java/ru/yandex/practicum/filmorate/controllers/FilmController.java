@@ -26,6 +26,12 @@ public class FilmController {
         this.filmService = filmService;
     }
 
+    @GetMapping("/films/search")
+    public List<Film> searchFilm(@RequestParam String query, @RequestParam String by) {
+        log.info("Получен запрос на поиск фильмов c запросом {} по параметрам {}", query, by);
+        return filmService.searchFilm(query, by).collect(Collectors.toList());
+    }
+
     @GetMapping("/films")
     public List<Film> getFilms() {
         log.info("Получен запрос на получение списка всех фильмов");

@@ -120,7 +120,6 @@ public class FilmService extends BaseService<Film> {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
-        Film film = storage.getById(id);
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
@@ -179,6 +178,12 @@ public class FilmService extends BaseService<Film> {
                     .collect(Collectors.toList());
         }
         throw new EntityNotFoundException("Неверный параметр запроса.");
+    }
+
+    public Stream<Film> searchFilm(String query, String by) {
+        return storage.search(query, by)
+                .peek(genreStorage::setFilmGenre)
+                .peek(directorDBStorage::setFilmDirector);
     }
 
     public List<Film> getRecommendations(long userId) {

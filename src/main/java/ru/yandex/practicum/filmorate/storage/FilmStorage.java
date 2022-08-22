@@ -13,4 +13,6 @@ public interface FilmStorage extends EntityStorage<Film> {
     Stream<Film> getSortFilmsDirectorByYear(final Long id);
 
     Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year);
+
+    Stream<Film> search(String query, String by);
 }
