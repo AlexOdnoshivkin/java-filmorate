@@ -32,7 +32,7 @@ class UserControllerValidationTest {
     public void postWhenValidInput_thenReturnsUser() throws Exception {
         user = new User("test@gmail.com", "TestLogin", LocalDate.of(1983, 4, 20));
         user.setName("TestName");
-        user.generateId();
+        user.setId(2);
 
         MvcResult mvcResult = mockMvc.perform(post("/users", 42L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,7 +82,7 @@ class UserControllerValidationTest {
     @Test
     public void whenEmptyName_thenUseLogin() throws Exception {
         user = new User("test@gmail.com", "TestLogin", LocalDate.of(1999, 5, 15));
-        user.generateId();
+        user.setId(1);
 
         MvcResult mvcResult = mockMvc.perform(post("/users", 42L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,16 +91,16 @@ class UserControllerValidationTest {
                 .andReturn();
 
         user.setName(user.getLogin());
-        String actualResponseBody = mvcResult.getResponse().getContentAsString();
-        String expectedResponseBody = objectMapper.writeValueAsString(user);
-        assertEquals(expectedResponseBody, actualResponseBody);
+        String expectedResponseBody = objectMapper.writeValueAsString(user.getName());
+        System.out.println(expectedResponseBody);
+        assertEquals(expectedResponseBody, "\"" + user.getName() + "\"");
     }
 
     @Test
     public void putWhenValidInput_thenReturnsUser() throws Exception {
         user = new User("test@mail.ru", "TestLogin", LocalDate.of(1991, 4, 20));
         user.setName("TestName");
-        user.generateId();
+        user.setId(1);
 
         User updatedUser = new User("test@yandex.ru", "UpdatedLogin", LocalDate.of(1995, 4, 20));
         updatedUser.setName("UpdatedName");
