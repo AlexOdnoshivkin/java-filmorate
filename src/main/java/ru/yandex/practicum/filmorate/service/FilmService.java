@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import java.time.Year;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.films.Director;
@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
-public class FilmService extends BaseService<Film> {
+public class FilmService {
 
     private final UserService userService;
     private final FilmStorage storage;
@@ -34,39 +35,25 @@ public class FilmService extends BaseService<Film> {
     private final DirectorDBStorage directorDBStorage;
     private final RecommendationsDao recommendationsDao;
 
-    @Autowired
-    public FilmService(UserService userService, FilmStorage storage, FilmLikeStorage filmLikeStorage,
-                       GenreStorage genreStorage, MpaStorage mpaStorage, EventService eventService,
-                       DirectorDBStorage directorDBStorage, RecommendationsDao recommendationsDao) {
-        super(storage);
-        this.userService = userService;
-        this.storage = storage;
-        this.filmLikeStorage = filmLikeStorage;
-        this.genreStorage = genreStorage;
-        this.mpaStorage = mpaStorage;
-        this.eventService = eventService;
-        this.directorDBStorage = directorDBStorage;
-        this.recommendationsDao = recommendationsDao;
-    }
 
-    @Override
     public List<Film> getAll() {
-        List<Film> films = super.getAll();
+        List<Film> films = storage.getAll();
         return films.stream()
                 .peek(genreStorage::setFilmGenre)
                 .peek(directorDBStorage::setFilmDirector)
                 .collect(Collectors.toList());
     }
 
-    @Override
     public Film getById(Long id) {
-        Film film = super.getById(id);
+        if (storage.getById(id) == null) {
+            throw new EntityNotFoundException("Объект не найден");
+        }
+        Film film = storage.getById(id);
         genreStorage.setFilmGenre(film);
         directorDBStorage.setFilmDirector(film);
         return film;
     }
 
-    @Override
     public Film create(Film film) {
         film = storage.add(film);
         log.debug("Добавлен фильм: {}", film);
@@ -79,7 +66,6 @@ public class FilmService extends BaseService<Film> {
         return film;
     }
 
-    @Override
     public Film update(Film film) {
         if (storage.getById(film.getId()) != null) {
             log.debug("Обновлён фильм: {}", film);
@@ -106,7 +92,6 @@ public class FilmService extends BaseService<Film> {
         eventService.addLikeEvent(userId, id);
     }
 
-    @Override
     public void delete(Long id) {
         Film film = storage.getById(id);
         if (film == null) {
@@ -191,4 +176,5 @@ public class FilmService extends BaseService<Film> {
                 .map(this::getById)
                 .collect(Collectors.toList());
     }
+
 }

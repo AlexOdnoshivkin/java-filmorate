@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.model.films;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ru.yandex.practicum.filmorate.model.IdControllable;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 
@@ -16,7 +15,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of="id")
-public class Film implements IdControllable {
+public class Film {
     @NotEmpty(message = "Имя не может быть пустым")
     private final String name;
     @Size(max = 200, message = "Описание должно быть не более 200 символов")
@@ -43,12 +42,5 @@ public class Film implements IdControllable {
 
     public void setMpa(Mpa mpa) {
         this.mpa = mpa;
-    }
-
-    @Override
-    public void generateId() {
-        if (id == 0) {
-            id = ++count;
-        }
     }
 }
