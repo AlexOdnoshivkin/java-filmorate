@@ -5,10 +5,7 @@ import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +13,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(of="id")
 public class Film {
-    @NotEmpty(message = "Имя не может быть пустым")
+    @NotBlank(message = "Имя не может быть пустым")
     private final String name;
     @Size(max = 200, message = "Описание должно быть не более 200 символов")
     private final String description;
