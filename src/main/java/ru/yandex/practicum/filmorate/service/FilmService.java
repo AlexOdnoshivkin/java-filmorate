@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Genre;
 import ru.yandex.practicum.filmorate.model.films.Mpa;
 import ru.yandex.practicum.filmorate.storage.*;
-import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.storage.FilmRatingStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDBStorage;
@@ -28,7 +28,7 @@ public class FilmService {
 
     private final UserService userService;
     private final FilmStorage storage;
-    private final FilmLikeStorage filmLikeStorage;
+    private final FilmRatingStorage filmRatingStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
     private final EventService eventService;
@@ -81,14 +81,14 @@ public class FilmService {
         return film;
     }
 
-    public void addLike(long id, long userId) {
+    public void addRating(long id, long userId, float rating) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmLikeStorage.addLike(id, userId);
+        filmRatingStorage.addRating(id, userId, rating);
         eventService.addLikeEvent(userId, id);
     }
 
@@ -101,14 +101,14 @@ public class FilmService {
         log.debug("Удалён фильм: {}", film);
     }
 
-    public void deleteLike(long id, long userId) {
+    public void deleteRating(long id, long userId) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmLikeStorage.deleteLike(id, userId);
+        filmRatingStorage.deleteRating(id, userId);
         eventService.removeLikeEvent(userId, id);
     }
 
