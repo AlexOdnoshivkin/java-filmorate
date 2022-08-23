@@ -97,7 +97,7 @@ public class FilmController {
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void putLike(@PathVariable long id, @PathVariable long userId, @RequestParam @Min(1) @Max(10) float rating) {
+    public void putLike(@PathVariable long id, @PathVariable long userId, @RequestParam @Min(1) @Max(10) int rating) {
         log.info("Получен запрос на добавление рейтинга {} фильму с id: {} пользователем с id: {}", rating, id, userId);
         filmService.addRating(id, userId, rating);
     }
