@@ -103,6 +103,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Stream<Film> getCommonFilms(Long userId, Long friendId) {
         String selectCommonFilms = "SELECT " + SELECT_FILM +
+
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes AS l on f.film_id = l.film_id " +
