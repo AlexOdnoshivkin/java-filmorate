@@ -26,6 +26,13 @@ import java.util.List;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final String SELECT_FILM = "f.FILM_ID," +
+            "                 f.NAME," +
+            "                 f.DESCRIPTION," +
+            "                 f.RELEASE_DATE," +
+            "                 f.DURATION," +
+            "                 f.MPA_ID," +
+            "                 m.NAME ";
 
     @Override
     public Film add(Film film) {
@@ -73,13 +80,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAll() {
-        String sqlQuery = "SELECT f.FILM_ID," +
-                "                 f.NAME," +
-                "                 f.DESCRIPTION," +
-                "                 f.RELEASE_DATE," +
-                "                 f.DURATION," +
-                "                 f.MPA_ID," +
-                "                 m.NAME " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM FILMS AS f " +
                 "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID " +
                 "GROUP BY f.FILM_ID";
@@ -88,13 +89,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(long id) {
-        String sqlQuery = "SELECT f.FILM_ID," +
-                "                 f.NAME," +
-                "                 f.DESCRIPTION," +
-                "                 f.RELEASE_DATE," +
-                "                 f.DURATION," +
-                "                 f.MPA_ID," +
-                "                 m.NAME " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM FILMS AS f " +
                 "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID AND f.FILM_ID = ?";
 
@@ -107,7 +102,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Stream<Film> getCommonFilms(Long userId, Long friendId) {
-        String selectCommonFilms = "SELECT f.*, m.name " +
+        String selectCommonFilms = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN likes AS l on f.film_id = l.film_id " +
@@ -136,13 +131,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> getMostPopularFilmsDefault(Integer count) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
@@ -153,13 +142,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> getMostPopularFilmsByGenre(Integer count, Long genreId) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
@@ -172,13 +155,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> getMostPopularFilmsByYear(Integer count, Year year) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
@@ -190,13 +167,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> getMostPopularFilmsByGenreAndYear(Integer count, Long genreId, Year year) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
                 "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
@@ -223,27 +194,27 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public Stream<Film> getMostPopularFilmsDirector(final Long id) {
-        final String selectMostPopularFilms = "SELECT * " +
-                "FROM films " +
-                "LEFT JOIN likes ON films.film_id = likes.film_id " +
-                "LEFT JOIN mpa ON mpa.mpa_id = films.mpa_id " +
-                "LEFT JOIN films_directors ON films_directors.film_id = films.film_id " +
+        final String selectMostPopularFilms = "SELECT " + SELECT_FILM +
+                "FROM films AS f " +
+                "LEFT JOIN likes ON f.film_id = likes.film_id " +
+                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
+                "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
                 "WHERE director_id = ? " +
-                "GROUP BY films.film_id " +
+                "GROUP BY f.film_id " +
                 "ORDER BY COUNT(user_id) DESC ";
         return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
                 .stream();
     }
 
     public Stream<Film> getSortFilmsDirectorByYear(final Long id) {
-        final String selectMostPopularFilms = "SELECT * " +
-                "FROM films " +
-                "LEFT JOIN likes ON films.film_id = likes.film_id " +
-                "LEFT JOIN mpa ON mpa.mpa_id = films.mpa_id " +
-                "LEFT JOIN films_directors ON films_directors.film_id = films.film_id " +
+        final String selectMostPopularFilms = "SELECT " + SELECT_FILM +
+                "FROM films AS f " +
+                "LEFT JOIN likes ON f.film_id = likes.film_id " +
+                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
+                "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
                 "WHERE director_id = ? " +
-                "GROUP BY films.film_id " +
-                "ORDER BY FILMS.RELEASE_DATE ";
+                "GROUP BY f.film_id " +
+                "ORDER BY f.RELEASE_DATE ";
         return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
                 .stream();
     }
@@ -265,13 +236,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> searchFilmByName(String query) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
                 "LEFT JOIN likes AS l ON l.film_id = f.film_id " +
@@ -283,13 +248,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> searchFilmByDirector(String query) {
-        String sqlQuery = "SELECT f.film_id, " +
-                "       f.name, " +
-                "       f.description, " +
-                "       f.release_date, " +
-                "       f.duration, " +
-                "       f.mpa_id, " +
-                "       m.name " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
                 "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
@@ -303,13 +262,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Stream<Film> searchFilmByNameOrDirector(String query) {
-        String sqlQuery = "SELECT f.film_id,  " +
-                "       f.name,  " +
-                "       f.description,  " +
-                "       f.release_date,  " +
-                "       f.duration,  " +
-                "       f.mpa_id,  " +
-                "       m.name  " +
+        String sqlQuery = "SELECT " + SELECT_FILM +
                 "FROM films AS f  " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id  " +
                 "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id  " +
