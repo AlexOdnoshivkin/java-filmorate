@@ -20,8 +20,8 @@ public class FilmRatingDbStorage implements FilmRatingStorage {
         String sqlQuery = "INSERT INTO film_ratings (film_id, user_id, user_rating) VALUES (?, ?, ?)";
 
         int affected = jdbcTemplate.update("UPDATE FILM_RATINGS set " +
-                "USER_RATING = ? where FILM_ID = ? AND USER_ID = ?", rating, id);
-        if (affected == 0) {
+                "USER_RATING = ? where FILM_ID = ? AND USER_ID = ?", rating, id, userId);
+        if (affected != 0) {
             throw new RatingWasAlreadyAdded("Рейтинг фильму " + id + " от пользователя "+ userId + "уже был добавлен");
         }
         jdbcTemplate.update(sqlQuery, id, userId, rating);
