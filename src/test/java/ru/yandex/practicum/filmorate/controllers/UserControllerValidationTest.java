@@ -92,7 +92,6 @@ class UserControllerValidationTest {
 
         user.setName(user.getLogin());
         String expectedResponseBody = objectMapper.writeValueAsString(user.getName());
-        System.out.println(expectedResponseBody);
         assertEquals(expectedResponseBody, "\"" + user.getName() + "\"");
     }
 
