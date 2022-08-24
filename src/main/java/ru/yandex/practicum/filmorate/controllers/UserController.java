@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.event.Event;
 import ru.yandex.practicum.filmorate.model.users.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -11,13 +13,10 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final EventService eventService;
 
     @GetMapping("/users")
     public Collection<User> getUsers() {
@@ -43,6 +42,12 @@ public class UserController {
         return userService.getCommonFriends(id, otherId);
     }
 
+    @GetMapping("/users/{id}/feed")
+    public List<Event> getUserFeed(@PathVariable long id) {
+        log.info("Получен запрос на получение списка событий для пользователя c id {}", id);
+        return eventService.getUserEvents(id);
+    }
+
     @PostMapping("/users")
     public User postUser(@Valid @RequestBody User user) {
         log.debug("Получен Post-запрос на добавление пользователя");
@@ -65,5 +70,11 @@ public class UserController {
     public void deleteFromFriends(@PathVariable long id, @PathVariable long friendId) {
         log.info("Получен запрос на удаление пользователя с id {} из списка друзей пользователя с id {}", friendId, id);
         userService.deleteFromFriends(id, friendId);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        log.info("Получен запрос на удаление пользователя с id: {}.", userId);
+        userService.delete(userId);
     }
 }

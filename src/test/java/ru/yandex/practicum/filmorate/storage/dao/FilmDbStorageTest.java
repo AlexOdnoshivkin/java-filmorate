@@ -5,13 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Mpa;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 
 @SpringBootTest
@@ -54,4 +59,42 @@ class FilmDbStorageTest {
         storage.delete(film2);
     }
 
+    @Test
+    @SqlGroup({
+        @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+        @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
+    void getCommonFilms() {
+        Stream<Film> filmStream = storage.getCommonFilms(1L, 2L);
+        Film trainspotting = new Film(
+            "Trainspotting",
+            "Absolutely amazing film!",
+            LocalDate.of(1996, 2, 23),
+            93);
+        trainspotting.setId(1);
+        trainspotting.setMpa(new Mpa(4L, "R"));
+
+        Film bigFish = new Film(
+            "Big Fish",
+            "A brilliant experience",
+            LocalDate.of(2003, 12, 25),
+            125);
+        bigFish.setId(2);
+        bigFish.setMpa(new Mpa(2L, "PG"));
+
+        assertThat(filmStream)
+            .isNotEmpty()
+            .containsExactly(trainspotting, bigFish);
+    }
+
+    @Test
+    @SqlGroup({
+        @Sql(value = {"get-common-films-when-no-common-films-exist.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+        @Sql(value = {"get-common-films-when-no-common-films-exist.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
+    void getCommonFilmsWhenNoCommonFilmsExist() {
+        Stream<Film> filmStream = storage.getCommonFilms(1L, 2L);
+
+        assertThat(filmStream).isEmpty();
+    }
 }

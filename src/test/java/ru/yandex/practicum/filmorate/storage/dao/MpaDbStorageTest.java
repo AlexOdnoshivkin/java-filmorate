@@ -29,9 +29,9 @@ class MpaDbStorageTest {
 
     @Test
     void getMpaByIdTest() {
-        List<Mpa> mpas = storage.getAllMpa();
+       List<Mpa> mpas = storage.getAllMpa();
 
-        assertThat(mpas.size())
-                .isEqualTo(5);
+       assertThat(mpas.size())
+              .isEqualTo(5);
     }
 }
