@@ -102,6 +102,8 @@ public class FilmController {
         filmService.addRating(id, userId, rating);
     }
 
+    @PutMapping
+
     @DeleteMapping("/films/{id}/like/{userId}")
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Получен запрос на удаление рейтинга у фильма с id: {} пользователем с id: {}", id, userId);

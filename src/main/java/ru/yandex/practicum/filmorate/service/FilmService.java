@@ -41,7 +41,7 @@ public class FilmService {
         return films.stream()
                 .peek(genreStorage::setFilmGenre)
                 .peek(directorDBStorage::setFilmDirector)
-                .peek(filmRatingStorage::getFilmRating)
+                .peek(filmRatingStorage::CalculateFilmRating)
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +52,7 @@ public class FilmService {
         Film film = storage.getById(id);
         genreStorage.setFilmGenre(film);
         directorDBStorage.setFilmDirector(film);
-        filmRatingStorage.getFilmRating(film);
+        filmRatingStorage.CalculateFilmRating(film);
         return film;
     }
 
@@ -80,7 +80,7 @@ public class FilmService {
         film = storage.update(film);
         film.setGenres(genreStorage.getFilmGenres(film));
         film.setDirectors(directorDBStorage.getFilmDirectors(film));
-        filmRatingStorage.getFilmRating(film);
+        filmRatingStorage.CalculateFilmRating(film);
         return film;
     }
 
@@ -91,8 +91,12 @@ public class FilmService {
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmRatingStorage.addRating(id, userId, rating);
-        eventService.addLikeEvent(userId, id);
+        if (filmRatingStorage.addRating(id, userId, rating) == 1) {
+            eventService.addRatingEvent(userId, id);
+        } else {
+            eventService.updateRatingEvent(userId, id);
+        }
+
     }
 
     public void delete(Long id) {
@@ -112,7 +116,7 @@ public class FilmService {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmRatingStorage.deleteRating(id, userId);
-        eventService.removeLikeEvent(userId, id);
+        eventService.removeRatingEvent(userId, id);
     }
 
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
@@ -145,7 +149,7 @@ public class FilmService {
 
     public Stream<Film> getCommonFilms(Long userId, Long friendId) {
         return storage.getCommonFilms(userId, friendId)
-                .peek(filmRatingStorage::getFilmRating); //записываем рейтинг фильма
+                .peek(filmRatingStorage::CalculateFilmRating); //записываем рейтинг фильма
     }
 
     public List<Film> getFilmsDirectorSort(long directorId, String sortBy) {
@@ -158,14 +162,14 @@ public class FilmService {
             return storage.getSortFilmsDirectorByYear(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)
-                    .peek(filmRatingStorage::getFilmRating)
+                    .peek(filmRatingStorage::CalculateFilmRating)
                     .collect(Collectors.toList());
         } else if (sortBy.equals("likes")) {
             log.info("Получен запрос на получение фильмов режиссера {} отсортированных по лайкам", directorId);
             return storage.getMostPopularFilmsDirector(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)
-                    .peek(filmRatingStorage::getFilmRating)
+                    .peek(filmRatingStorage::CalculateFilmRating)
                     .collect(Collectors.toList());
         }
         throw new EntityNotFoundException("Неверный параметр запроса.");
@@ -175,13 +179,13 @@ public class FilmService {
         return storage.search(query, by)
                 .peek(genreStorage::setFilmGenre)
                 .peek(directorDBStorage::setFilmDirector)
-                .peek(filmRatingStorage::getFilmRating);
+                .peek(filmRatingStorage::CalculateFilmRating);
     }
 
     public List<Film> getRecommendations(long userId) {
         return recommendationsDao.getRecommendations(userId).stream()
                 .map(this::getById)
-                .peek(filmRatingStorage::getFilmRating)
+                .peek(filmRatingStorage::CalculateFilmRating)
                 .collect(Collectors.toList());
     }
 
