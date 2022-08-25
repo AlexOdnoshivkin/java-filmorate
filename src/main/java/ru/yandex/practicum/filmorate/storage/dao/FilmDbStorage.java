@@ -106,11 +106,11 @@ public class FilmDbStorage implements FilmStorage {
 
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
-                "LEFT JOIN likes AS l on f.film_id = l.film_id " +
-                "WHERE l.user_id IN (?, ?) " +
-                "GROUP BY l.film_id " +
-                "HAVING COUNT(l.user_id) = 2 " +
-                "ORDER BY COUNT(l.user_id) DESC";
+                "LEFT JOIN FILM_RATINGS AS rf on f.film_id = rf.film_id " +
+                "WHERE rf.user_id IN (?, ?) " +
+                "GROUP BY rf.film_id " +
+                "HAVING COUNT(rf.user_id) = 2 " +
+                "ORDER BY COUNT(rf.user_id) DESC";
         return jdbcTemplate
                 .query(selectCommonFilms, this::mapRowToFilm, userId, friendId)
                 .stream();
@@ -135,9 +135,9 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON f.film_id = fr.film_id " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
+                "ORDER BY AVG(fr.USER_RATING) DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count).stream();
     }
@@ -146,11 +146,11 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON f.film_id = fr.film_id " +
                 "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
                 "WHERE g.genre_id = ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
+                "ORDER BY AVG(fr.USER_RATING) DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, count).stream();
     }
@@ -159,10 +159,10 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON f.film_id = fr.film_id " +
                 "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
+                "ORDER BY AVG(fr.USER_RATING) DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year.getValue(), count).stream();
     }
@@ -171,12 +171,12 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON f.film_id = fr.film_id " +
                 "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
                 "WHERE g.genre_id = ? " +
                 "AND EXTRACT(YEAR FROM f.release_date) = ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
+                "ORDER BY AVG(fr.USER_RATING) DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, year.getValue(), count).stream();
     }
@@ -197,12 +197,12 @@ public class FilmDbStorage implements FilmStorage {
     public Stream<Film> getMostPopularFilmsDirector(final Long id) {
         final String selectMostPopularFilms = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
-                "LEFT JOIN likes ON f.film_id = likes.film_id " +
+                "LEFT JOIN FILM_RATINGS ON f.film_id = FILM_RATINGS.film_id " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
                 "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
                 "WHERE director_id = ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(user_id) DESC ";
+                "ORDER BY AVG(FILM_RATINGS.USER_RATING) DESC ";
         return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
                 .stream();
     }
@@ -210,7 +210,7 @@ public class FilmDbStorage implements FilmStorage {
     public Stream<Film> getSortFilmsDirectorByYear(final Long id) {
         final String selectMostPopularFilms = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
-                "LEFT JOIN likes ON f.film_id = likes.film_id " +
+                "LEFT JOIN FILM_RATINGS ON f.film_id = FILM_RATINGS.film_id " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
                 "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
                 "WHERE director_id = ? " +
@@ -240,10 +240,10 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
-                "LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON fr.film_id = f.film_id " +
                 "WHERE f.name ILIKE ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC;";
+                "ORDER BY AVG(fr.USER_RATING) DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%")
                 .stream();
     }
@@ -254,10 +254,10 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
                 "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
                 "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                "LEFT JOIN likes AS l ON l.film_id = f.film_id " +
+                "LEFT JOIN FILM_RATINGS AS fr ON fr.film_id = f.film_id " +
                 "WHERE d.director_name ILIKE ? " +
                 "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC;";
+                "ORDER BY AVG(fr.USER_RATING) DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%")
                 .stream();
     }
@@ -268,10 +268,10 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id  " +
                 "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id  " +
                 "LEFT JOIN directors AS d ON fd.director_id = d.director_id  " +
-                "LEFT JOIN likes AS l ON l.film_id = f.film_id  " +
+                "LEFT JOIN FILM_RATINGS AS fr ON fr.film_id = f.film_id  " +
                 "WHERE d.director_name ILIKE ? OR f.name ILIKE ?  " +
                 "GROUP BY f.film_id  " +
-                "ORDER BY COUNT(l.user_id) DESC;";
+                "ORDER BY AVG(fr.USER_RATING) DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%", "%" + query + "%")
                 .stream();
     }

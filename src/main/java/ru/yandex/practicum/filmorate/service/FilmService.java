@@ -122,7 +122,8 @@ public class FilmService {
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
         return storage.getMostPopularFilms(count, genreId, year)
                 .peek(genreStorage::setFilmGenre)
-                .peek(directorDBStorage::setFilmDirector);
+                .peek(directorDBStorage::setFilmDirector)
+                .peek(filmRatingStorage::CalculateFilmRating);
     }
 
     public List<Genre> getAllGenres() {
