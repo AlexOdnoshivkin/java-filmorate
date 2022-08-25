@@ -165,8 +165,8 @@ public class FilmService {
                     .peek(directorDBStorage::setFilmDirector)
                     .peek(filmRatingStorage::CalculateFilmRating)
                     .collect(Collectors.toList());
-        } else if (sortBy.equals("likes")) {
-            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по лайкам", directorId);
+        } else if (sortBy.equals("rating")) {
+            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по рейтингу", directorId);
             return storage.getMostPopularFilmsDirector(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)

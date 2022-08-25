@@ -8,15 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import ru.yandex.practicum.filmorate.model.films.Film;
-import ru.yandex.practicum.filmorate.model.films.Mpa;
-import ru.yandex.practicum.filmorate.model.users.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -24,67 +25,34 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class FilmRatingDbStorageTest {
     private final FilmRatingDbStorage storage;
     private final FilmService filmDbStorage;
-    private final UserDbStorage userDbStorage;
 
     @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
     void commonFilms() {
-        Film film1 = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1967, 3, 24), 100);
-        film1.setMpa(new Mpa(1, "G"));
-        Film film2 = new Film("Other film", "description", LocalDate.of(1987, 4, 11), 120);
-        film2.setMpa(new Mpa(1, "G"));
-        filmDbStorage.create(film1);
-        filmDbStorage.create(film2);
-        User user1 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user1.setName("TestName");
-        User user2 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user2.setName("TestName");
-        userDbStorage.add(user1);
-        userDbStorage.add(user2);
-        List<User> users = userDbStorage.getAll();
-
-        storage.addRating(film1.getId(), users.get(0).getId(), 5);
-        storage.addRating(film2.getId(), users.get(0).getId(), 6);
-        storage.addRating(film2.getId(), users.get(1).getId(), 7);
-
-        List<Film> films = filmDbStorage.getAll();
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 1, 6);
+        storage.addRating(2, 2, 7);
 
         List<Film> commonFilms = filmDbStorage.getCommonFilms(1L, 2L).collect(Collectors.toList());
 
         assertThat(commonFilms.get(0))
-                .isEqualTo(films.get(1));
-
+                .isEqualTo(filmDbStorage.getById(2L));
         assertThat(commonFilms.size())
                 .isEqualTo(1);
     }
 
     @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
     void getMostPopularFilmsByDefault() {
-        Film film1 = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1996, 3, 24), 100);
-        film1.setMpa(new Mpa(1, "G"));
-
-        Film film2 = new Film("Other film", "description", LocalDate.of(1987, 4, 11), 120);
-        film2.setMpa(new Mpa(1, "G"));
-
-        Film film3 = new Film("film", "descrip", LocalDate.of(1965, 5, 11), 110);
-        film3.setMpa(new Mpa(1, "G"));
-
-        filmDbStorage.create(film1);
-        filmDbStorage.create(film2);
-        filmDbStorage.create(film3);
-
-        User user1 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user1.setName("TestName");
-        User user2 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user2.setName("TestName");
-
-        userDbStorage.add(user1);
-        userDbStorage.add(user2);
-
-        List<User> users = userDbStorage.getAll();
-
-        storage.addRating(film1.getId(), users.get(0).getId(), 5);
-        storage.addRating(film2.getId(), users.get(0).getId(), 6);
-        storage.addRating(film3.getId(), users.get(1).getId(), 7);
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
 
         List<Film> films = filmDbStorage.getAll();
 
@@ -95,34 +63,16 @@ class FilmRatingDbStorageTest {
         assertThat(films.get(2))
                 .isEqualTo(popularFilm.get(0));
     }
+
     @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
     void getMostPopularFilmsByYear() {
-        Film film1 = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1996, 3, 24), 100);
-        film1.setMpa(new Mpa(1, "G"));
-
-        Film film2 = new Film("Other film", "description", LocalDate.of(1987, 4, 11), 120);
-        film2.setMpa(new Mpa(1, "G"));
-
-        Film film3 = new Film("film", "descrip", LocalDate.of(1965, 5, 11), 110);
-        film3.setMpa(new Mpa(1, "G"));
-
-        filmDbStorage.create(film1);
-        filmDbStorage.create(film2);
-        filmDbStorage.create(film3);
-
-        User user1 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user1.setName("TestName");
-        User user2 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user2.setName("TestName");
-
-        userDbStorage.add(user1);
-        userDbStorage.add(user2);
-
-        List<User> users = userDbStorage.getAll();
-
-        storage.addRating(film1.getId(), users.get(0).getId(), 5);
-        storage.addRating(film2.getId(), users.get(0).getId(), 6);
-        storage.addRating(film3.getId(), users.get(1).getId(), 7);
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
 
         List<Film> films = filmDbStorage.getAll();
 
@@ -135,34 +85,77 @@ class FilmRatingDbStorageTest {
     }
 
     @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
     void getMostPopularFilmsByName() {
-        Film film1 = new Film("nisi eiusmod", "adipisicing", LocalDate.of(1996, 3, 24), 100);
-        film1.setMpa(new Mpa(1, "G"));
-
-        Film film2 = new Film("Other film", "description", LocalDate.of(1987, 4, 11), 120);
-        film2.setMpa(new Mpa(1, "G"));
-
-        filmDbStorage.create(film1);
-        filmDbStorage.create(film2);
-
-        User user1 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user1.setName("TestName");
-        User user2 = new User("test@gmail.com", "TestLogin", LocalDate.of(1993, 4, 20));
-        user2.setName("TestName");
-
-        userDbStorage.add(user1);
-        userDbStorage.add(user2);
-
-        List<User> users = userDbStorage.getAll();
-
-        storage.addRating(film1.getId(), users.get(0).getId(), 5);
-        storage.addRating(film2.getId(), users.get(0).getId(), 6);
-        storage.addRating(film2.getId(), users.get(1).getId(), 7);
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
 
         List<Film> films = filmDbStorage.getAll();
 
-        List<Film> popularFilm = filmDbStorage.searchFilm("er f", "title")
+        List<Film> popularFilm = filmDbStorage.searchFilm("Sleep", "title")
                 .collect(Collectors.toList());
+        assertThat(films.get(2).getId())
+                .isEqualTo(popularFilm.get(0).getId());
+        assertThat(films.get(2))
+                .isEqualTo(popularFilm.get(0));
+    }
+
+    @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
+    void getMostPopularFilmsByGenres() {
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
+
+        List<Film> films = filmDbStorage.getAll();
+
+        List<Film> popularFilm = filmDbStorage.getMostPopularFilms(10, 1L, null)
+                .collect(Collectors.toList());
+        assertThat(films.get(2).getId())
+                .isEqualTo(popularFilm.get(0).getId());
+        assertThat(films.get(2))
+                .isEqualTo(popularFilm.get(0));
+    }
+
+    @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
+    void getMostPopularFilmsDirectorByYear() {
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
+
+        List<Film> films = filmDbStorage.getAll();
+
+        List<Film> popularFilm = filmDbStorage.getFilmsDirectorSort(1, "year");
+        assertThat(films.get(0).getId())
+                .isEqualTo(popularFilm.get(0).getId());
+        assertThat(films.get(0))
+                .isEqualTo(popularFilm.get(0));
+    }
+
+    @Test
+    @SqlGroup({
+            @Sql(value = {"get-common-films.before.sql"}, executionPhase = BEFORE_TEST_METHOD),
+            @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
+    })
+    void getMostPopularFilmsDirectorByRating() {
+        storage.addRating(1, 1, 5);
+        storage.addRating(2, 2, 6);
+        storage.addRating(3, 3, 7);
+
+        List<Film> films = filmDbStorage.getAll();
+
+        List<Film> popularFilm = filmDbStorage.getFilmsDirectorSort(2, "rating");
         assertThat(films.get(1).getId())
                 .isEqualTo(popularFilm.get(0).getId());
         assertThat(films.get(1))
