@@ -8,10 +8,18 @@ VALUES (1, 'Trainspotting', 'Absolutely amazing film!', '1996-2-23', 93, 4),
        (2, 'Big Fish', 'A brilliant experience', '2003-12-25', 125, 2),
        (3, 'Doctor Sleep', 'Wow. Absolutely incredible film.', '2019-10-31', 152, 4);
 
-INSERT INTO likes (FILM_ID, USER_ID)
-VALUES (1, 1),
-       (1, 2),
-       (2, 1),
+
+INSERT INTO FILMS_GENRE (FILM_ID, GENRE_ID)
+VALUES (1, 3),
        (2, 2),
-       (2, 3),
+       (3, 1);
+
+INSERT INTO DIRECTORS (DIRECTOR_ID, DIRECTOR_NAME)
+VALUES (1, 'Бойл'),
+       (2, 'Бёртон'),
+       (3, 'Флэнаган');
+
+INSERT INTO FILMS_DIRECTORS (FILM_ID, DIRECTOR_ID)
+VALUES (1, 1),
+       (2, 2),
        (3, 3);

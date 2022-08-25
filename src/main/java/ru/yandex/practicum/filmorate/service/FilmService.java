@@ -122,7 +122,8 @@ public class FilmService {
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
         return storage.getMostPopularFilms(count, genreId, year)
                 .peek(genreStorage::setFilmGenre)
-                .peek(directorDBStorage::setFilmDirector);
+                .peek(directorDBStorage::setFilmDirector)
+                .peek(filmRatingStorage::CalculateFilmRating);
     }
 
     public List<Genre> getAllGenres() {
@@ -164,8 +165,8 @@ public class FilmService {
                     .peek(directorDBStorage::setFilmDirector)
                     .peek(filmRatingStorage::CalculateFilmRating)
                     .collect(Collectors.toList());
-        } else if (sortBy.equals("likes")) {
-            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по лайкам", directorId);
+        } else if (sortBy.equals("rating")) {
+            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по рейтингу", directorId);
             return storage.getMostPopularFilmsDirector(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)
