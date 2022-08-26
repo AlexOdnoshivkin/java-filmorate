@@ -41,9 +41,9 @@ class FilmLikeDbStorageTest {
         userDbStorage.add(user2);
         List<User> users = userDbStorage.getAll();
         List<Film> films = filmDbStorage.getAll();
-        storage.addRating(films.get(0).getId(),users.get(0).getId(), 5.5f);
-        storage.addRating(films.get(1).getId(),users.get(0).getId(), 6.6f);
-        storage.addRating(films.get(1).getId(),users.get(1).getId(), 7.7f);
+        storage.addRating(films.get(0).getId(),users.get(0).getId(), 5);
+        storage.addRating(films.get(1).getId(),users.get(0).getId(), 6);
+        storage.addRating(films.get(1).getId(),users.get(1).getId(), 7);
 
         List<Film> popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
             .collect(Collectors.toList());

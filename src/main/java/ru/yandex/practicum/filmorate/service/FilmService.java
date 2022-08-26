@@ -81,15 +81,18 @@ public class FilmService {
         return film;
     }
 
-    public void addRating(long id, long userId, float rating) {
+    public void addRating(long id, long userId, int rating) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmRatingStorage.addRating(id, userId, rating);
-        eventService.addLikeEvent(userId, id);
+        if (filmRatingStorage.saveRating(id, userId, rating) == 0) {
+            eventService.addRatingEvent(userId, id);
+        } else {
+            eventService.updateRatingEvent(userId, id);
+        }
     }
 
     public void delete(Long id) {
@@ -109,7 +112,7 @@ public class FilmService {
             throw new EntityNotFoundException("Фильм не найден");
         }
         filmRatingStorage.deleteRating(id, userId);
-        eventService.removeLikeEvent(userId, id);
+        eventService.removeRatingEvent(userId, id);
     }
 
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
@@ -155,8 +158,8 @@ public class FilmService {
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)
                     .collect(Collectors.toList());
-        } else if (sortBy.equals("likes")) {
-            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по лайкам", directorId);
+        } else if (sortBy.equals("rating")) {
+            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по рейтингу", directorId);
             return storage.getMostPopularFilmsDirector(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)

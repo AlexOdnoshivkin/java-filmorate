@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.event.Event;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EventService {
 
     private final EventStorage eventStorage;
@@ -21,17 +21,24 @@ public class EventService {
         return eventStorage.getUserEvents(userId);
     }
 
-    public void removeLikeEvent(long userId, long entityId) {
+    public void removeRatingEvent(long userId, long entityId) {
         Event event = new Event(userId, entityId);
-        event.setEventType(EventType.LIKE);
+        event.setEventType(EventType.RATING);
         event.setOperation(Operation.REMOVE);
         eventStorage.add(event);
     }
 
-    public void addLikeEvent(long userId, long entityId) {
+    public void addRatingEvent(long userId, long entityId) {
         Event event = new Event(userId, entityId);
-        event.setEventType(EventType.LIKE);
+        event.setEventType(EventType.RATING);
         event.setOperation(Operation.ADD);
+        eventStorage.add(event);
+    }
+
+    public void updateRatingEvent(long userId, long entityId) {
+        Event event = new Event(userId, entityId);
+        event.setEventType(EventType.RATING);
+        event.setOperation(Operation.UPDATE);
         eventStorage.add(event);
     }
 
