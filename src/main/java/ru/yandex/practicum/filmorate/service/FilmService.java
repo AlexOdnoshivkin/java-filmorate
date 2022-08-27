@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Genre;
 import ru.yandex.practicum.filmorate.model.films.Mpa;
 import ru.yandex.practicum.filmorate.storage.*;
-import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.storage.FilmRatingStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDBStorage;
@@ -28,7 +28,7 @@ public class FilmService {
 
     private final UserService userService;
     private final FilmStorage storage;
-    private final FilmLikeStorage filmLikeStorage;
+    private final FilmRatingStorage filmRatingStorage;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
     private final EventService eventService;
@@ -81,15 +81,18 @@ public class FilmService {
         return film;
     }
 
-    public void addLike(long id, long userId) {
+    public void addRating(long id, long userId, int rating) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmLikeStorage.addLike(id, userId);
-        eventService.addLikeEvent(userId, id);
+        if (filmRatingStorage.saveRating(id, userId, rating) == 0) {
+            eventService.addRatingEvent(userId, id);
+        } else {
+            eventService.updateRatingEvent(userId, id);
+        }
     }
 
     public void delete(Long id) {
@@ -101,15 +104,15 @@ public class FilmService {
         log.debug("Удалён фильм: {}", film);
     }
 
-    public void deleteLike(long id, long userId) {
+    public void deleteRating(long id, long userId) {
         if (userService.storage.getById(userId) == null) {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         if (storage.getById(id) == null) {
             throw new EntityNotFoundException("Фильм не найден");
         }
-        filmLikeStorage.deleteLike(id, userId);
-        eventService.removeLikeEvent(userId, id);
+        filmRatingStorage.deleteRating(id, userId);
+        eventService.removeRatingEvent(userId, id);
     }
 
     public Stream<Film> getMostPopularFilms(Integer count, Long genreId, Year year) {
@@ -155,8 +158,8 @@ public class FilmService {
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)
                     .collect(Collectors.toList());
-        } else if (sortBy.equals("likes")) {
-            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по лайкам", directorId);
+        } else if (sortBy.equals("rating")) {
+            log.info("Получен запрос на получение фильмов режиссера {} отсортированных по рейтингу", directorId);
             return storage.getMostPopularFilmsDirector(directorId)
                     .peek(genreStorage::setFilmGenre)
                     .peek(directorDBStorage::setFilmDirector)

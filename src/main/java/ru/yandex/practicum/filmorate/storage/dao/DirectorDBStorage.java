@@ -89,11 +89,11 @@ public class DirectorDBStorage {
     }
 
     public void setFilmDirector(Film film) {
-        String sqlQuery = "SELECT d.DIRECTOR_ID," +
-                "                 d.DIRECTOR_NAME " +
-                "FROM FILMS_DIRECTORS AS fd " +
-                "INNER JOIN DIRECTORS d on d.DIRECTOR_ID = fd.DIRECTOR_ID " +
-                "WHERE fd.FILM_ID = ?";
+        String sqlQuery = "SELECT D.DIRECTOR_ID," +
+                "                 D.DIRECTOR_NAME " +
+                "FROM FILMS_DIRECTORS AS FD " +
+                "INNER JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID " +
+                "WHERE FD.FILM_ID = ?";
         List<Director> directors = jdbcTemplate.query(sqlQuery, this::mapRowToDirector, film.getId());
         Set<Director> directorsSet = new HashSet<>(directors);
         film.setDirectors(directorsSet);
@@ -117,9 +117,9 @@ public class DirectorDBStorage {
         Set<Director> directors;
         String sqlQuery = "SELECT d.DIRECTOR_ID," +
                 "                 d.DIRECTOR_NAME " +
-                "FROM FILMS_DIRECTORS AS fd " +
-                "INNER JOIN DIRECTORS d on d.DIRECTOR_ID = FD.DIRECTOR_ID " +
-                "WHERE fd.FILM_ID = ?";
+                "FROM FILMS_DIRECTORS AS FD " +
+                "INNER JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID " +
+                "WHERE FD.FILM_ID = ?";
         directors = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToDirector, film.getId()));
         return directors;
     }

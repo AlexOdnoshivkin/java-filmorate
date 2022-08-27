@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import java.time.Year;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Genre;
@@ -18,6 +20,7 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@Validated
 public class FilmController {
     private final FilmService filmService;
 
@@ -96,15 +99,17 @@ public class FilmController {
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void putLike(@PathVariable long id, @PathVariable long userId) {
-        log.info("Получен запрос на добавление лайка фильму с id: {} пользователем с id: {}", id, userId);
-        filmService.addLike(id, userId);
+    public void putLike(@PathVariable long id, @PathVariable long userId, @RequestParam @Min(1) @Max(10) int rating) {
+        log.info("Получен запрос на добавление рейтинга {} фильму с id: {} пользователем с id: {}", rating, id, userId);
+        filmService.addRating(id, userId, rating);
     }
+
+    @PutMapping
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
-        log.info("Получен запрос на удаление лайка фильму с id: {} пользователем с id: {}", id, userId);
-        filmService.deleteLike(id, userId);
+        log.info("Получен запрос на удаление рейтинга у фильма с id: {} пользователем с id: {}", id, userId);
+        filmService.deleteRating(id, userId);
     }
 
     @GetMapping("/films/common")

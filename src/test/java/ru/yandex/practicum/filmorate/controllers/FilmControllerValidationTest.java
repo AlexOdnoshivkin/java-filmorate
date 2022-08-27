@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -149,5 +148,16 @@ public class FilmControllerValidationTest {
                         .content(objectMapper.writeValueAsString(film)))
                 .andExpect(status().isNotFound())
                 .andReturn();
+    }
+
+    @Test
+    public void putRatingWhenNotValid() throws Exception {
+        mockMvc.perform(put("/films/:id/like/:userId?rating=11", 1, 1, 42L)
+                .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString("")))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
     }
 }

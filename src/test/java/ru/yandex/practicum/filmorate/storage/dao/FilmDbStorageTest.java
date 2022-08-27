@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.films.Film;
 import ru.yandex.practicum.filmorate.model.films.Mpa;
 
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.List;
 
@@ -24,6 +25,8 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @AllArgsConstructor(onConstructor_ = @Autowired)
 class FilmDbStorageTest {
     private final FilmDbStorage storage;
+    private final FilmRatingDbStorage filmRatingDbStorage;
+    private final UserDbStorage userDbStorage;
 
     @Test
     void userDbStorageTest() {
@@ -65,7 +68,7 @@ class FilmDbStorageTest {
         @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
     })
     void getCommonFilms() {
-        Stream<Film> filmStream = storage.getCommonFilms(1L, 2L);
+
         Film trainspotting = new Film(
             "Trainspotting",
             "Absolutely amazing film!",
@@ -82,9 +85,17 @@ class FilmDbStorageTest {
         bigFish.setId(2);
         bigFish.setMpa(new Mpa(2L, "PG"));
 
-        assertThat(filmStream)
+
+        filmRatingDbStorage.addRating(1, 1, 8);
+        filmRatingDbStorage.addRating(1, 2, 7);
+        filmRatingDbStorage.addRating(2, 1, 9);
+        filmRatingDbStorage.addRating(2, 2, 3);
+
+        Stream<Film> filmStream = storage.getCommonFilms(1L, 2L);
+
+        assertThat(filmStream.collect(Collectors.toList()))
             .isNotEmpty()
-            .containsExactly(trainspotting, bigFish);
+            .containsExactly(trainspotting);
     }
 
     @Test

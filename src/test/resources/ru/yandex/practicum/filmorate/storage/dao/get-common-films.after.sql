@@ -1,4 +1,8 @@
-DELETE FROM likes WHERE film_id IN (1, 2, 3) OR user_id IN (1, 2, 3);
+DELETE FROM FILMS_GENRE WHERE film_id IN (1, 2, 3) OR GENRE_ID IN (1, 2, 3, 4, 5, 6);
+
+DELETE FROM FILMS_DIRECTORS WHERE film_id IN (1, 2, 3) OR DIRECTOR_ID IN (1, 2, 3);
+
+DELETE FROM DIRECTORS WHERE DIRECTOR_NAME IN ('Бойл', 'Бёртон', 'Флэнаган') OR DIRECTOR_ID IN (1, 2, 3);
 
 DELETE FROM users WHERE user_id IN (1, 2, 3);
 
