@@ -23,7 +23,7 @@ public class UserDbStorage implements UserStorage, MapRawToUser {
 
     @Override
     public User add(User user) {
-        String sqlQuery = "INSERT INTO USERS(NAME, LOGIN, EMAIL, BIRTHDAY) values ( ?, ?, ?, ? ) ";
+        String sqlQuery = "INSERT INTO USERS(NAME, LOGIN, EMAIL, BIRTHDAY) VALUES ( ?, ?, ?, ? ) ";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -41,7 +41,7 @@ public class UserDbStorage implements UserStorage, MapRawToUser {
 
     @Override
     public User update(User user) {
-        String sqlQuery = "UPDATE USERS SET  name = ?, login = ?, email = ?, birthday = ? WHERE USER_ID = ?";
+        String sqlQuery = "UPDATE USERS SET  NAME = ?, LOGIN = ?, EMAIL = ?, BIRTHDAY = ? WHERE USER_ID = ?";
 
         jdbcTemplate.update(sqlQuery,
                 user.getName(),
@@ -55,21 +55,21 @@ public class UserDbStorage implements UserStorage, MapRawToUser {
 
     @Override
     public void delete(User user) {
-        String sqlQuery = "DELETE FROM USERS WHERE user_id = ?";
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?";
         jdbcTemplate.update(sqlQuery, user.getId());
         log.debug("Из базы данных удалён пользователь {}.", user);
     }
 
     @Override
     public List<User> getAll() {
-        String sqlQuery = "SELECT user_id, name, login, email, birthday FROM users";
+        String sqlQuery = "SELECT USER_ID, NAME, LOGIN, EMAIL, BIRTHDAY FROM USERS";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
 
     @Override
     public User getById(long id) {
-        String sqlQuery = "SELECT user_id, name, login, email, birthday FROM users WHERE user_id = ?";
-        int affected = jdbcTemplate.update("UPDATE users set user_id = ? where user_id = ?", id, id);
+        String sqlQuery = "SELECT USER_ID, NAME, LOGIN, EMAIL, BIRTHDAY FROM USERS WHERE USER_ID = ?";
+        int affected = jdbcTemplate.update("UPDATE USERS set USER_ID = ? where USER_ID = ?", id, id);
         if (affected == 0) {
             return null;
         }

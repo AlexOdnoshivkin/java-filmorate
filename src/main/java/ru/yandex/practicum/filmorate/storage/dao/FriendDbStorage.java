@@ -18,14 +18,14 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
 
     public void addFriend(long reqUserId, long respUserId) {
         // Проверяем, был ли уже отправлен запрос на дружбу
-        int affected = jdbcTemplate.update("UPDATE friends set req_user_id = ?, resp_user_id = ? " +
-                "where req_user_id = ? AND resp_user_id = ?", respUserId, reqUserId, respUserId, reqUserId);
+        int affected = jdbcTemplate.update("UPDATE FRIENDS set REQ_USER_ID = ?, RESP_USER_ID = ? " +
+                "where REQ_USER_ID = ? AND RESP_USER_ID = ?", respUserId, reqUserId, respUserId, reqUserId);
         System.out.println(affected);
 
         // Если нет, добавляем строку в таблицу
         String sqlQuery;
         if (affected == 0) {
-            sqlQuery = "INSERT INTO friends (req_user_id, resp_user_id) VALUES (?, ?)";
+            sqlQuery = "INSERT INTO FRIENDS (REQ_USER_ID, RESP_USER_ID) VALUES (?, ?)";
             // Устанавливаем флаг подтверждения
         } else {
             sqlQuery = "UPDATE friends SET IS_FRIEND = 1 WHERE REQ_USER_ID = ? AND RESP_USER_ID = ?";
@@ -34,41 +34,41 @@ public class FriendDbStorage implements FriendsStorage, MapRawToUser {
     }
 
     public List<User> getAllFriends(long id) {
-        String sqlQuery = "SELECT DISTINCT u.user_id, " +
-                "                          u.name," +
-                "                          u.LOGIN," +
-                "                          u.email," +
-                "                          u.birthday " +
-                "FROM friends AS f " +
-                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID" +
-                "    OR u.user_id = f.RESP_USER_ID) " +
-                "    AND (f.REQ_USER_ID = ?" +
-                "        OR f.RESP_USER_ID = ?)" +
-                "WHERE ((f.RESP_USER_ID = ?" +
-                "  AND f.is_friend) OR f.REQ_USER_ID = ?) AND u.USER_ID != ?" +
-                "ORDER BY u.user_id";
+        String sqlQuery = "SELECT DISTINCT U.USER_ID, " +
+                "                          U.NAME," +
+                "                          U.LOGIN," +
+                "                          U.EMAIL," +
+                "                          U.BIRTHDAY " +
+                "FROM FRIENDS AS F " +
+                "         INNER JOIN USERS AS U ON (U.USER_ID = F.REQ_USER_ID" +
+                "    OR U.USER_ID = F.RESP_USER_ID) " +
+                "    AND (F.REQ_USER_ID = ?" +
+                "        OR F.RESP_USER_ID = ?)" +
+                "WHERE ((F.RESP_USER_ID = ?" +
+                "  AND F.IS_FRIEND) OR F.REQ_USER_ID = ?) AND U.USER_ID != ?" +
+                "ORDER BY U.USER_ID";
         List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, id, id, id, id);
         log.debug("Выгружен список друзей пользователя с id {}, количество друзей: {}", id, users.size());
         return users;
     }
 
     public List<User> getCommonFriends(long id, long otherId) {
-        String sqlQuery = "SELECT DISTINCT u.user_id," +
-                "                          u.name," +
-                "                          u.email," +
-                "                          u.login," +
-                "                          u.birthday " +
-                "FROM friends AS f" +
-                "         INNER JOIN users AS u ON (u.user_id = f.REQ_USER_ID" +
-                "    OR u.user_id = f.RESP_USER_ID)" +
-                "    AND (f.REQ_USER_ID = ?" +
-                "        OR f.RESP_USER_ID = ?" +
-                "        OR f.REQ_USER_ID = ?" +
-                "        OR f.RESP_USER_ID = ?)" +
-                "WHERE u.user_id != ?" +
-                "  AND u.user_id != ?" +
-                "GROUP BY u.user_id " +
-                "ORDER BY u.user_id";
+        String sqlQuery = "SELECT DISTINCT U.USER_ID," +
+                "                          U.NAME," +
+                "                          U.EMAIL," +
+                "                          U.login," +
+                "                          U.birthday " +
+                "FROM FRIENDS AS F" +
+                "         INNER JOIN USERS AS U ON (U.USER_ID = F.REQ_USER_ID" +
+                "    OR U.USER_ID = F.RESP_USER_ID)" +
+                "    AND (F.REQ_USER_ID = ?" +
+                "        OR F.RESP_USER_ID = ?" +
+                "        OR F.REQ_USER_ID = ?" +
+                "        OR F.RESP_USER_ID = ?)" +
+                "WHERE U.USER_ID != ?" +
+                "  AND U.USER_ID != ?" +
+                "GROUP BY U.USER_ID " +
+                "ORDER BY U.USER_ID";
         List<User> users = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, id, otherId, otherId, id, otherId);
         log.debug("Выгружен список общих друзей для пользователей с id {} и {}, количестов друзей: {}",
                 id, otherId, users.size());

@@ -29,11 +29,11 @@ public class ReviewDbStorage {
     private List<Review> getForFilmWithLimit(Long filmId, int count) {
         return jdbcTemplate.query(
                 "SELECT r.*, " +
-                        "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
-                        "FROM REVIEWS AS r " +
-                        "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
+                        "COALESCE(SUM(D.UTILITY),0) AS USEFUL " +
+                        "FROM REVIEWS AS R " +
+                        "LEFT JOIN REVIEW_LIKE AS D ON R.REVIEW_ID = D.REVIEW_ID " +
                         "WHERE FILM_ID = ? " +
-                        "GROUP BY r.REVIEW_ID " +
+                        "GROUP BY R.REVIEW_ID " +
                         "ORDER BY USEFUL DESC " +
                         "LIMIT ?",
                 this::mapRowToReview,
@@ -44,11 +44,11 @@ public class ReviewDbStorage {
 
     private List<Review> getWithLimit(int count) {
         return jdbcTemplate.query(
-                "SELECT r.*, " +
-                        "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
-                        "FROM REVIEWS AS r " +
-                        "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
-                        "GROUP BY r.REVIEW_ID " +
+                "SELECT R.*, " +
+                        "COALESCE(SUM(D.UTILITY),0) AS USEFUL " +
+                        "FROM REVIEWS AS R " +
+                        "LEFT JOIN REVIEW_LIKE AS d ON R.REVIEW_ID = D.REVIEW_ID " +
+                        "GROUP BY R.REVIEW_ID " +
                         "ORDER BY USEFUL desc " +
                         "LIMIT ?",
                 this::mapRowToReview,
@@ -58,11 +58,11 @@ public class ReviewDbStorage {
 
     public Review getById(long id) {
         String sqlQuery = "SELECT r.*, " +
-                "COALESCE(SUM(d.UTILITY),0) AS USEFUL " +
-                "FROM REVIEWS AS r " +
-                "LEFT JOIN REVIEW_LIKE AS d ON r.REVIEW_ID = d.REVIEW_ID " +
-                "WHERE r.REVIEW_ID = ? " +
-                "GROUP BY r.REVIEW_ID";
+                "COALESCE(SUM(D.UTILITY),0) AS USEFUL " +
+                "FROM REVIEWS AS R " +
+                "LEFT JOIN REVIEW_LIKE AS D ON R.REVIEW_ID = D.REVIEW_ID " +
+                "WHERE R.REVIEW_ID = ? " +
+                "GROUP BY R.REVIEW_ID";
         int affected = jdbcTemplate.update("UPDATE REVIEWS set REVIEW_ID = ? where REVIEW_ID = ?", id, id);
         if (affected == 0) {
             return null;
@@ -89,8 +89,8 @@ public class ReviewDbStorage {
     }
 
     public Review update(Review review) {
-        String sqlQuery = "UPDATE REVIEWS SET content = ?," +
-                " positive = ?" +
+        String sqlQuery = "UPDATE REVIEWS SET CONTENT = ?," +
+                " POSITIVE = ?" +
                 "WHERE REVIEW_ID = ?";
         jdbcTemplate.update(sqlQuery,
                 review.getContent(),

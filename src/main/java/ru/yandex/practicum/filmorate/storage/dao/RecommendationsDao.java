@@ -22,7 +22,7 @@ public class RecommendationsDao implements RecommendationsStorage {
     }
 
     private List<Long> getCommonUser(long userId) {
-        String sqlQuery = "SELECT LI.USER_ID FROm FILM_RATINGS AS LI " +
+        String sqlQuery = "SELECT LI.USER_ID FROM FILM_RATINGS AS LI " +
                 "INNER JOIN FILM_RATINGS AS l ON l.FILM_ID = LI.FILM_ID " +
                 "AND NOT l.USER_ID = LI.USER_ID AND l.USER_ID = ? " +
                 "WHERE (LI.USER_RATING > 5 AND L.USER_RATING > 5) OR (LI.USER_RATING < 6 AND L.USER_RATING < 6) " +

@@ -34,28 +34,23 @@ public class FilmRatingDbStorage implements FilmRatingStorage {
         int affected = jdbcTemplate.update(sqlQuery, id, id, userId );
         if (affected == 0) addRating(id, userId, rating);
         else updateRating(id, userId, rating);
-        putFilmRating(id, calculateRating(id));
+        putRatingToFilm(id);
         return affected;
     }
 
     @Override
     public void deleteRating(long id, long userId) {
-        String sqlQuery = "DELETE FROM film_ratings WHERE film_id = ? AND user_id = ?";
+        String sqlQuery = "DELETE FROM film_ratings WHERE FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
-        putFilmRating(id, calculateRating(id));
+        putRatingToFilm(id);
         log.debug("Удалён рейтинг у фильма с id {} пользователем с id {}", id, userId);
     }
 
-    private float calculateRating(long id) {
-        String sqlQuery = "SELECT AVG(fr.USER_RATING) FROM FILM_RATINGS AS fr WHERE FILM_ID = ?";
-        Float rating = jdbcTemplate.queryForObject(sqlQuery, Float.class, id);
-        if (rating == null) return 0.0F;
-        return rating;
-    }
-
-    private void putFilmRating(long id, float rating) {
-        String sqlQuery = "UPDATE FILMS SET RATING = ? WHERE FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery, rating, id);
+    private void putRatingToFilm(long id) {
+        String sqlQuery = "UPDATE FILMS " +
+                "SET RATING = (SELECT AVG(FR.USER_RATING) FROM FILM_RATINGS AS FR WHERE FILM_ID = ?) " +
+                "WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, id, id);
         log.debug("Обновлён рейтинг у фильма с id", id);
     }
 

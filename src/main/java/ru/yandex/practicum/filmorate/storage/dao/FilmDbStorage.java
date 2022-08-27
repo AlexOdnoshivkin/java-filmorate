@@ -26,14 +26,14 @@ import java.util.List;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String FILM_COLUMNS = "f.FILM_ID," +
-            "                 f.NAME," +
-            "                 f.DESCRIPTION," +
-            "                 f.RELEASE_DATE," +
-            "                 f.DURATION," +
-            "                 f.MPA_ID," +
-            "                 m.NAME," +
-            "                 f.rating ";
+    private final String FILM_COLUMNS = "F.FILM_ID," +
+            "                 F.NAME," +
+            "                 F.DESCRIPTION," +
+            "                 F.RELEASE_DATE," +
+            "                 F.DURATION," +
+            "                 F.MPA_ID," +
+            "                 M.NAME," +
+            "                 F.RATING ";
 
     @Override
     public Film add(Film film) {
@@ -58,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        String sqlQuery = "UPDATE FILMS SET  name = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?," +
+        String sqlQuery = "UPDATE FILMS SET  NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?," +
                 " MPA_ID = ?  WHERE FILM_ID = ?";
 
         jdbcTemplate.update(sqlQuery,
@@ -82,17 +82,17 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM FILMS AS f " +
-                "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID " +
-                "GROUP BY f.FILM_ID";
+                "FROM FILMS AS F " +
+                "INNER JOIN MPA M on M.MPA_ID = F.MPA_ID " +
+                "GROUP BY F.FILM_ID";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
     }
 
     @Override
     public Film getById(long id) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM FILMS AS f " +
-                "INNER JOIN MPA m on m.MPA_ID = f.MPA_ID AND f.FILM_ID = ?";
+                "FROM FILMS AS F " +
+                "INNER JOIN MPA M on M.MPA_ID = F.MPA_ID AND F.FILM_ID = ?";
 
         int affected = jdbcTemplate.update("UPDATE FILMS set FILM_ID = ? where FILM_ID = ?", id, id);
         if (affected == 0) {
@@ -106,12 +106,12 @@ public class FilmDbStorage implements FilmStorage {
         String selectCommonFilms = "SELECT " + FILM_COLUMNS +
 
                 "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON f.mpa_id = m.mpa_id " +
-                "LEFT JOIN FILM_RATINGS AS fr on f.film_id = fr.film_id " +
-                "WHERE fr.user_id IN (?, ?) AND fr.USER_RATING > 5 " +
-                "GROUP BY fr.film_id " +
-                "HAVING COUNT(fr.user_id) = 2 " +
-                "ORDER BY COUNT(fr.user_id) DESC";
+                "LEFT JOIN mpa AS m ON F.MPA_ID = M.MPA_ID " +
+                "LEFT JOIN FILM_RATINGS AS FR on F.FILM_ID = FR.FILM_ID " +
+                "WHERE FR.USER_ID IN (?, ?) AND FR.USER_RATING > 5 " +
+                "GROUP BY FR.FILM_ID " +
+                "HAVING COUNT(FR.USER_ID) = 2 " +
+                "ORDER BY COUNT(FR.USER_ID) DESC";
         return jdbcTemplate
                 .query(selectCommonFilms, this::mapRowToFilm, userId, friendId)
                 .stream();
@@ -134,46 +134,46 @@ public class FilmDbStorage implements FilmStorage {
 
     private Stream<Film> getMostPopularFilmsDefault(Integer count) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC " +
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.FILM_ID " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count).stream();
     }
 
     private Stream<Film> getMostPopularFilmsByGenre(Integer count, Long genreId) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
-                "WHERE g.genre_id = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC " +
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.FILM_ID " +
+                "LEFT JOIN FILMS_GENRE AS G ON F.FILM_ID = G.FILM_ID " +
+                "WHERE G.GENRE_ID = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, count).stream();
     }
 
     private Stream<Film> getMostPopularFilmsByYear(Integer count, Year year) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC " +
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.FILM_ID " +
+                "WHERE EXTRACT(YEAR FROM F.RELEASE_DATE) = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year.getValue(), count).stream();
     }
 
     private Stream<Film> getMostPopularFilmsByGenreAndYear(Integer count, Long genreId, Year year) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.film_id " +
-                "LEFT JOIN films_genre AS g ON f.film_id = g.film_id " +
-                "WHERE g.genre_id = ? " +
-                "AND EXTRACT(YEAR FROM f.release_date) = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC " +
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.FILM_ID " +
+                "LEFT JOIN FILMS_GENRE AS G ON F.FILM_ID = G.FILM_ID " +
+                "WHERE G.GENRE_ID = ? " +
+                "AND EXTRACT(YEAR FROM F.RELEASE_DATE) = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC " +
                 "LIMIT ?;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, year.getValue(), count).stream();
     }
@@ -194,24 +194,24 @@ public class FilmDbStorage implements FilmStorage {
 
     public Stream<Film> getMostPopularFilmsDirector(final Long id) {
         final String selectMostPopularFilms = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
-                "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
-                "WHERE director_id = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC ";
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.MPA_ID " +
+                "LEFT JOIN FILMS_DIRECTORS ON FILMS_DIRECTORS.FILM_ID = F.FILM_ID " +
+                "WHERE DIRECTOR_ID = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC ";
         return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
                 .stream();
     }
 
     public Stream<Film> getSortFilmsDirectorByYear(final Long id) {
         final String selectMostPopularFilms = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
-                "LEFT JOIN films_directors ON films_directors.film_id = f.film_id " +
-                "WHERE director_id = ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RELEASE_DATE ";
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.MPA_ID " +
+                "LEFT JOIN FILMS_DIRECTORS ON FILMS_DIRECTORS.FILM_ID = F.FILM_ID " +
+                "WHERE DIRECTOR_ID = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RELEASE_DATE ";
         return jdbcTemplate.query(selectMostPopularFilms, this::mapRowToFilm, id)
                 .stream();
     }
@@ -234,37 +234,37 @@ public class FilmDbStorage implements FilmStorage {
 
     private Stream<Film> searchFilmByName(String query) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
-                "WHERE f.name ILIKE ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC;";
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.MPA_ID " +
+                "WHERE F.NAME ILIKE ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%")
                 .stream();
     }
 
     private Stream<Film> searchFilmByDirector(String query) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id " +
-                "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
-                "LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
-                "WHERE d.director_name ILIKE ? " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC;";
+                "FROM FILMS AS F " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.MPA_ID " +
+                "LEFT JOIN FILMS_DIRECTORS AS FD ON F.FILM_ID = FD.FILM_ID " +
+                "LEFT JOIN DIRECTORS AS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "WHERE D.DIRECTOR_NAME ILIKE ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%")
                 .stream();
     }
 
     private Stream<Film> searchFilmByNameOrDirector(String query) {
         String sqlQuery = "SELECT " + FILM_COLUMNS +
-                "FROM films AS f  " +
-                "LEFT JOIN mpa AS m ON m.mpa_id = f.mpa_id  " +
-                "LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id  " +
-                "LEFT JOIN directors AS d ON fd.director_id = d.director_id  " +
-                "WHERE d.director_name ILIKE ? OR f.name ILIKE ?  " +
-                "GROUP BY f.film_id " +
-                "ORDER BY f.RATING DESC;";
+                "FROM FILMS AS F  " +
+                "LEFT JOIN MPA AS M ON M.MPA_ID = F.MPA_ID  " +
+                "LEFT JOIN FILMS_DIRECTORS AS FD ON F.FILM_ID = FD.FILM_ID  " +
+                "LEFT JOIN DIRECTORS AS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID  " +
+                "WHERE D.DIRECTOR_NAME ILIKE ? OR F.NAME ILIKE ?  " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY F.RATING DESC;";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%", "%" + query + "%")
                 .stream();
     }
