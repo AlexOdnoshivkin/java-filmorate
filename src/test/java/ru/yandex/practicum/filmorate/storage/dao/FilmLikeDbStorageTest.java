@@ -41,12 +41,13 @@ class FilmLikeDbStorageTest {
         userDbStorage.add(user2);
         List<User> users = userDbStorage.getAll();
         List<Film> films = filmDbStorage.getAll();
-        storage.addRating(films.get(0).getId(),users.get(0).getId(), 5);
-        storage.addRating(films.get(1).getId(),users.get(0).getId(), 6);
-        storage.addRating(films.get(1).getId(),users.get(1).getId(), 7);
+        storage.saveRating(films.get(0).getId(),users.get(0).getId(), 5);
+        storage.saveRating(films.get(1).getId(),users.get(0).getId(), 6);
+        storage.saveRating(films.get(1).getId(),users.get(1).getId(), 7);
 
         List<Film> popularFilm = filmDbStorage.getMostPopularFilms(10, null, null)
             .collect(Collectors.toList());
+        System.out.println(popularFilm);
         assertThat(films.get(1).getId())
                 .isEqualTo(popularFilm.get(0).getId());
         assertThat(films.get(0).getId())

@@ -50,9 +50,9 @@ class FilmRatingDbStorageTest {
             @Sql(value = {"get-common-films.after.sql"}, executionPhase = AFTER_TEST_METHOD)
     })
     void getMostPopularFilmsByDefault() {
-        storage.addRating(1, 1, 5);
-        storage.addRating(2, 2, 6);
-        storage.addRating(3, 3, 7);
+        storage.saveRating(1, 1, 5);
+        storage.saveRating(2, 2, 6);
+        storage.saveRating(3, 3, 7);
 
         List<Film> films = filmDbStorage.getAll();
 

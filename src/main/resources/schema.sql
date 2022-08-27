@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS films (
     description varchar (199),
     release_date date,
     duration integer,
-    mpa_id integer REFERENCES mpa(mpa_id) ON DELETE CASCADE
+    mpa_id integer REFERENCES mpa(mpa_id) ON DELETE CASCADE,
+    rating float default 0.0
     );
 
 CREATE TABLE IF NOT EXISTS FILM_RATINGS (
